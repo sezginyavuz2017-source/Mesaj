@@ -2,23 +2,65 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>İslami Mesaj ve Kart Tasarımcısı</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        :root {
+            color-scheme: dark;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background:
+                radial-gradient(circle at top, rgba(251,191,36,0.10), transparent 30%),
+                linear-gradient(180deg, #020617 0%, #0f172a 100%);
+        }
+
         .font-arabic { font-family: 'Amiri', serif; }
         .font-display { font-family: 'Playfair Display', serif; }
+
         .glow-effect {
             text-shadow: 0 0 20px rgba(255, 215, 0, 0.6), 0 0 40px rgba(255, 215, 0, 0.3);
         }
+
         .card-shadow {
-            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6);
         }
+
         .light-ray {
             background: linear-gradient(135deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0) 55%);
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 1rem 0.75rem;
+            }
+
+            #previewCard {
+                aspect-ratio: 4 / 5.2;
+                padding: 1.1rem;
+            }
+
+            #displayText {
+                font-size: clamp(1.25rem, 4.4vw, 2rem);
+                line-height: 1.7;
+            }
+
+            #displaySource {
+                font-size: 0.68rem;
+                line-height: 1.5;
+            }
+
+            .mobile-stack {
+                grid-template-columns: 1fr !important;
+            }
+
+            .action-btn {
+                min-height: 48px;
+            }
         }
     </style>
 </head>
@@ -26,20 +68,20 @@
 
     <div class="max-w-6xl w-full mx-auto space-y-8">
         <header class="text-center space-y-2">
-            <h1 class="text-3xl md:text-4xl font-display font-bold text-amber-400 tracking-wide">Nurî Mesaj ve Kart Tasarımcısı</h1>
-            <p class="text-slate-400 text-sm md:text-base">Diyanet referanslı hadisler, Kur'an ayetleri ve kişisel dua metinleriyle anlamlı mesajlar oluşturun.</p>
+            <h1 class="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-amber-400 tracking-wide">Nurî Mesaj ve Kart Tasarımcısı</h1>
+            <p class="text-slate-400 text-xs sm:text-sm md:text-base">Diyanet referanslı hadisler, Kur'an ayetleri ve kişisel dua metinleriyle anlamlı mesajlar oluşturun.</p>
         </header>
 
         <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
 
-            <aside class="md:col-span-5 space-y-6 bg-slate-900/80 p-6 rounded-2xl border border-slate-800 backdrop-blur-md">
+            <aside class="md:col-span-5 space-y-6 bg-slate-900/80 p-4 sm:p-6 rounded-2xl border border-slate-800 backdrop-blur-md">
 
                 <div>
                     <label class="block text-sm font-medium text-amber-300 mb-2">İçerik Türü</label>
                     <div class="grid grid-cols-3 gap-2">
-                        <button onclick="setContentType('hadith')" id="btnHadith" class="py-2 px-3 text-sm rounded-xl font-medium bg-amber-500 text-slate-950 transition">Hadis</button>
-                        <button onclick="setContentType('quran')" id="btnQuran" class="py-2 px-3 text-sm rounded-xl font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Ayet</button>
-                        <button onclick="setContentType('dua')" id="btnDua" class="py-2 px-3 text-sm rounded-xl font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Dua</button>
+                        <button onclick="setContentType('hadith')" id="btnHadith" class="py-2 px-2 sm:px-3 text-xs sm:text-sm rounded-xl font-medium bg-amber-500 text-slate-950 transition">Hadis</button>
+                        <button onclick="setContentType('quran')" id="btnQuran" class="py-2 px-2 sm:px-3 text-xs sm:text-sm rounded-xl font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Ayet</button>
+                        <button onclick="setContentType('dua')" id="btnDua" class="py-2 px-2 sm:px-3 text-xs sm:text-sm rounded-xl font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Dua</button>
                     </div>
                 </div>
 
@@ -47,13 +89,13 @@
                     <label class="block text-sm font-medium text-amber-300 mb-2">Metin / Kaynak Seçimi</label>
                     <div class="flex gap-2">
                         <select id="contentSelect" onchange="updateContentText()" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:border-amber-500"></select>
-                        <button onclick="randomizeContent()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold px-3 py-2 rounded-xl text-xs">🎲</button>
+                        <button onclick="randomizeContent()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold px-3 py-2 rounded-xl text-xs min-w-[44px]">🎲</button>
                     </div>
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-amber-300 mb-2">Özel Mesaj / Kutlama</label>
-                    <textarea id="customText" rows="4" oninput="updateCustomText()" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:border-amber-500" placeholder="Örneğin: Sevgili kardeşim, Allah senin gönlünü aydınlatsın..."></textarea>
+                    <textarea id="customText" rows="4" oninput="updateCustomText()" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:border-amber-500" placeholder="Örneğin: Sevgili kardeşim, Allah’ın rahmeti ve bereketi üzerinize olsun..."></textarea>
                 </div>
 
                 <div>
@@ -97,39 +139,39 @@
 
             <section class="md:col-span-7 flex flex-col space-y-6">
 
-                <div id="previewCard" class="relative w-full aspect-[4/5] rounded-3xl overflow-hidden card-shadow flex flex-col justify-between p-8 text-white transition-all duration-500">
+                <div id="previewCard" class="relative w-full aspect-[4/5] rounded-3xl overflow-hidden card-shadow flex flex-col justify-between p-6 sm:p-8 text-white transition-all duration-500">
                     <div id="cardBg" class="absolute inset-0 bg-cover bg-center transition-all duration-700" style="background-image: url('https://images.unsplash.com/photo-1564769625405-49e095204fb9?auto=format&fit=crop&w=1200&q=80')"></div>
                     <div id="cardOverlay" class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/70 to-slate-950/40 transition-all duration-500"></div>
                     <div class="absolute inset-0 light-ray pointer-events-none"></div>
 
                     <div class="relative z-10 text-center space-y-1">
-                        <span id="displayGreeting" class="inline-block text-amber-400 font-display text-lg md:text-xl tracking-wider font-semibold uppercase glow-effect">Hayırlı Cumalar Mümin Kardeşim</span>
+                        <span id="displayGreeting" class="inline-block text-amber-400 font-display text-base sm:text-lg md:text-xl tracking-wider font-semibold uppercase glow-effect">Hayırlı Cumalar Mümin Kardeşim</span>
                         <div class="w-16 h-0.5 bg-amber-500/60 mx-auto mt-2"></div>
                     </div>
 
-                    <div class="relative z-10 text-center my-auto space-y-4 px-2">
-                        <p id="displayText" class="font-arabic text-xl md:text-2xl leading-relaxed text-slate-100 drop-shadow-md">
+                    <div class="relative z-10 text-center my-auto space-y-3 sm:space-y-4 px-1 sm:px-2">
+                        <p id="displayText" class="font-arabic text-xl sm:text-2xl md:text-3xl leading-relaxed text-slate-100 drop-shadow-md">
                             “Ameller niyetlere göredir. Herkese niyet ettiği şey vardır.”
                         </p>
-                        <p id="displaySource" class="text-xs md:text-sm text-amber-300/90 font-medium tracking-wide">
+                        <p id="displaySource" class="text-[10px] sm:text-xs md:text-sm text-amber-300/90 font-medium tracking-wide leading-relaxed">
                             (Kaynak: Buhârî, Bed’ü’l-Vahy, 1 / Diyanet İşleri Başkanlığı)
                         </p>
                     </div>
 
-                    <div class="relative z-10 flex justify-between items-end pt-4 border-t border-white/10">
-                        <div class="text-[11px] text-slate-400 tracking-wider">NURÎ İSLAMİ KARTLAR</div>
-                        <div id="displaySignature" class="text-sm font-semibold text-amber-300 italic">Hayırlı Dualarla</div>
+                    <div class="relative z-10 flex justify-between items-end pt-4 border-t border-white/10 gap-2">
+                        <div class="text-[9px] sm:text-[11px] text-slate-400 tracking-wider">NURÎ İSLAMİ KARTLAR</div>
+                        <div id="displaySignature" class="text-xs sm:text-sm font-semibold text-amber-300 italic">Hayırlı Dualarla</div>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <button onclick="copyCardText()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium py-3 px-4 rounded-xl text-sm transition flex items-center justify-center gap-2">
+                <div class="mobile-stack grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <button onclick="copyCardText()" class="action-btn bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium py-3 px-4 rounded-xl text-sm transition flex items-center justify-center gap-2">
                         <span>📝</span><span>Metni Kopyala</span>
                     </button>
-                    <button onclick="downloadCardImage()" class="bg-amber-600 hover:bg-amber-500 text-slate-950 font-semibold py-3 px-4 rounded-xl text-sm transition flex items-center justify-center gap-2">
+                    <button onclick="downloadCardImage()" class="action-btn bg-amber-600 hover:bg-amber-500 text-slate-950 font-semibold py-3 px-4 rounded-xl text-sm transition flex items-center justify-center gap-2">
                         <span>📥</span><span>Kartı İndir</span>
                     </button>
-                    <button onclick="shareWhatsApp()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3 px-4 rounded-xl text-sm transition flex items-center justify-center gap-2">
+                    <button onclick="shareWhatsApp()" class="action-btn bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3 px-4 rounded-xl text-sm transition flex items-center justify-center gap-2">
                         <span>💬</span><span>WhatsApp'ta Paylaş</span>
                     </button>
                 </div>
@@ -179,13 +221,13 @@
             const btnQ = document.getElementById('btnQuran');
             const btnD = document.getElementById('btnDua');
 
-            btnH.className = 'py-2 px-3 text-sm rounded-xl font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition';
-            btnQ.className = 'py-2 px-3 text-sm rounded-xl font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition';
-            btnD.className = 'py-2 px-3 text-sm rounded-xl font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition';
+            btnH.className = 'py-2 px-2 sm:px-3 text-xs sm:text-sm rounded-xl font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition';
+            btnQ.className = 'py-2 px-2 sm:px-3 text-xs sm:text-sm rounded-xl font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition';
+            btnD.className = 'py-2 px-2 sm:px-3 text-xs sm:text-sm rounded-xl font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition';
 
-            if(type === 'hadith') btnH.className = 'py-2 px-3 text-sm rounded-xl font-medium bg-amber-500 text-slate-950 transition';
-            if(type === 'quran') btnQ.className = 'py-2 px-3 text-sm rounded-xl font-medium bg-amber-500 text-slate-950 transition';
-            if(type === 'dua') btnD.className = 'py-2 px-3 text-sm rounded-xl font-medium bg-amber-500 text-slate-950 transition';
+            if(type === 'hadith') btnH.className = 'py-2 px-2 sm:px-3 text-xs sm:text-sm rounded-xl font-medium bg-amber-500 text-slate-950 transition';
+            if(type === 'quran') btnQ.className = 'py-2 px-2 sm:px-3 text-xs sm:text-sm rounded-xl font-medium bg-amber-500 text-slate-950 transition';
+            if(type === 'dua') btnD.className = 'py-2 px-2 sm:px-3 text-xs sm:text-sm rounded-xl font-medium bg-amber-500 text-slate-950 transition';
 
             updateContentOptions();
         }
@@ -262,6 +304,8 @@
 
             navigator.clipboard.writeText(fullText).then(() => {
                 alert('Mesaj metni başarıyla panoya kopyalandı!');
+            }).catch(() => {
+                alert('Kopyalama için tarayıcı izni gereklidir.');
             });
         }
 
