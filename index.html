@@ -3,19 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>İslami Kutlama ve Mesaj Kartı Oluşturucu</title>
-    <!-- Tailwind CSS -->
+    <title>İslami Mesaj ve Kart Tasarımcısı</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- html2canvas for card download -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
         .font-arabic { font-family: 'Amiri', serif; }
         .font-display { font-family: 'Playfair Display', serif; }
-        
-        /* Özel Işık ve Efektler */
         .glow-effect {
             text-shadow: 0 0 20px rgba(255, 215, 0, 0.6), 0 0 40px rgba(255, 215, 0, 0.3);
         }
@@ -23,193 +18,175 @@
             box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
         }
         .light-ray {
-            background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 60%);
+            background: linear-gradient(135deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0) 55%);
         }
     </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col items-center justify-start p-4 md:p-8">
 
-    <div class="max-w-4xl w-full mx-auto space-y-8">
-        <!-- Başlık -->
+    <div class="max-w-6xl w-full mx-auto space-y-8">
         <header class="text-center space-y-2">
             <h1 class="text-3xl md:text-4xl font-display font-bold text-amber-400 tracking-wide">Nurî Mesaj ve Kart Tasarımcısı</h1>
-            <p class="text-slate-400 text-sm md:text-base">Cuma, Bayram ve Kandil mesajlarınızı Sahih Hadisler ve Kur'an Ayetleri ile zenginleştirin.</p>
+            <p class="text-slate-400 text-sm md:text-base">Diyanet referanslı hadisler, Kur'an ayetleri ve kişisel dua metinleriyle anlamlı mesajlar oluşturun.</p>
         </header>
 
         <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
-            
-            <!-- Sol Panel: Kontroller ve Seçimler -->
-            <div class="md:col-span-5 space-y-6 bg-slate-900/80 p-6 rounded-2xl border border-slate-800 backdrop-blur-md">
-                
-                <!-- Mesaj Türü (Hadis / Ayet) -->
+
+            <aside class="md:col-span-5 space-y-6 bg-slate-900/80 p-6 rounded-2xl border border-slate-800 backdrop-blur-md">
+
                 <div>
                     <label class="block text-sm font-medium text-amber-300 mb-2">İçerik Türü</label>
-                    <div class="grid grid-cols-2 gap-2">
-                        <button onclick="setContentType('hadith')" id="btnHadith" class="py-2 px-3 text-sm rounded-xl font-medium bg-amber-500 text-slate-950 transition">Hadis-i Şerif</button>
-                        <button onclick="setContentType('quran')" id="btnQuran" class="py-2 px-3 text-sm rounded-xl font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Kur'an Ayeti</button>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button onclick="setContentType('hadith')" id="btnHadith" class="py-2 px-3 text-sm rounded-xl font-medium bg-amber-500 text-slate-950 transition">Hadis</button>
+                        <button onclick="setContentType('quran')" id="btnQuran" class="py-2 px-3 text-sm rounded-xl font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Ayet</button>
+                        <button onclick="setContentType('dua')" id="btnDua" class="py-2 px-3 text-sm rounded-xl font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Dua</button>
                     </div>
                 </div>
 
-                <!-- İçerik Seçimi -->
                 <div>
                     <label class="block text-sm font-medium text-amber-300 mb-2">Metin / Kaynak Seçimi</label>
-                    <select id="contentSelect" onchange="updateContentText()" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:border-amber-500">
-                        <!-- Dinamik olarak doldurulacak -->
-                    </select>
+                    <div class="flex gap-2">
+                        <select id="contentSelect" onchange="updateContentText()" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:border-amber-500"></select>
+                        <button onclick="randomizeContent()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold px-3 py-2 rounded-xl text-xs">🎲</button>
+                    </div>
                 </div>
 
-                <!-- Özel Dilek/Kutlama Başlığı -->
+                <div>
+                    <label class="block text-sm font-medium text-amber-300 mb-2">Özel Mesaj / Kutlama</label>
+                    <textarea id="customText" rows="4" oninput="updateCustomText()" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:border-amber-500" placeholder="Örneğin: Sevgili kardeşim, Allah senin gönlünü aydınlatsın..."></textarea>
+                </div>
+
                 <div>
                     <label class="block text-sm font-medium text-amber-300 mb-2">Kutlama Başlığı</label>
                     <select id="greetingSelect" onchange="updateGreeting()" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:border-amber-500">
                         <option value="Hayırlı Cumalar Mümin Kardeşim">Hayırlı Cumalar</option>
                         <option value="Mübarek Kurban Bayramınız Kutlu Olsun">Kurban Bayramı</option>
-                        <option value="Mübarek Racon/Ramazan Bayramınız Mübarek Olsun">Ramazan Bayramı</option>
+                        <option value="Mübarek Ramazan Bayramınız Kutlu Olsun">Ramazan Bayramı</option>
                         <option value="Hayırlı Kandiller, Dualarınız Kabul Olsun">Kandil Gecesi</option>
-                        <option value="Hayırlı Sabahlar, Cumamız Mübarek Olsun">Hayırlı Sabahlar</option>
+                        <option value="Hayırlı Sabahlar, Rahmet ve Bereket Dolsun">Hayırlı Sabahlar</option>
+                        <option value="Sevgiyle, Şefkatle ve Dua ile">Sevgi ve Dua</option>
+                        <option value="Allah’ın Rahmeti Üzerinize Olsun">Rahmet Mesajı</option>
                     </select>
                 </div>
 
-                <!-- Arka Plan Görseli -->
                 <div>
-                    <label class="block text-sm font-medium text-amber-300 mb-2">Arka Plan Teması</label>
+                    <label class="block text-sm font-medium text-amber-300 mb-2">Arka Plan Görseli</label>
                     <select id="bgSelect" onchange="updateBackground()" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:border-amber-500">
-                        <option value="https://images.unsplash.com/photo-1564769625405-49e095204fb9?auto=format&fit=crop&w=1200&q=80">Muhteşem Camii Silüeti (Akşam)</option>
-                        <option value="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1200&q=80">Huzurlu Doğa ve Işık Süzmesi</option>
-                        <option value="https://images.unsplash.com/photo-1519817650390-64a93db51149?auto=format&fit=crop&w=1200&q=80">İslami Mimari ve Geometri</option>
-                        <option value="https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=1200&q=80">Huzur Veren Çiçek Bahçesi</option>
+                        <option value="https://images.unsplash.com/photo-1564769625405-49e095204fb9?auto=format&fit=crop&w=1200&q=80">Camii Silüeti</option>
+                        <option value="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1200&q=80">Doğa ve Işık</option>
+                        <option value="https://images.unsplash.com/photo-1519817650390-64a93db51149?auto=format&fit=crop&w=1200&q=80">İslami Mimari</option>
+                        <option value="https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=1200&q=80">Çiçek Bahçesi</option>
+                        <option value="https://images.unsplash.com/photo-1521295121783-8a321d551ad2?auto=format&fit=crop&w=1200&q=80">İstanbul Manzarası</option>
+                        <option value="https://images.unsplash.com/photo-1511735643442-503bb3bd348a?auto=format&fit=crop&w=1200&q=80">Namaz Kılanlar</option>
+                        <option value="https://images.unsplash.com/photo-1509099836639-18ba1795216d?auto=format&fit=crop&w=1200&q=80">Mescid ve Dua</option>
+                        <option value="https://images.unsplash.com/photo-1534620808146-d33bb7a3fd86?auto=format&fit=crop&w=1200&q=80">Çocuklar ve Huzur</option>
                     </select>
                 </div>
 
-                <!-- Işık Efekti Yoğunluğu -->
                 <div>
                     <label class="block text-sm font-medium text-amber-300 mb-2">Işık ve Efekt Yoğunluğu</label>
-                    <input type="range" id="effectRange" min="0" max="100" value="60" oninput="updateEffects()" class="w-full accent-amber-500 cursor-pointer">
+                    <input type="range" id="effectRange" min="0" max="100" value="62" oninput="updateEffects()" class="w-full accent-amber-500 cursor-pointer">
                 </div>
 
-                <!-- İmza / Gönderen Adı -->
                 <div>
                     <label class="block text-sm font-medium text-amber-300 mb-2">Gönderen Adı (İmza)</label>
                     <input type="text" id="signatureInput" value="Hayırlı Dualarla" oninput="updateSignature()" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:border-amber-500">
                 </div>
 
-            </div>
+            </aside>
 
-            <!-- Sağ Panel: Canlı Önizleme ve Paylaşım -->
-            <div class="md:col-span-7 flex flex-col space-y-6">
-                
-                <!-- Önizleme Kartı (WhatsApp İçin Uygun Kare/Dikey Oran) -->
+            <section class="md:col-span-7 flex flex-col space-y-6">
+
                 <div id="previewCard" class="relative w-full aspect-[4/5] rounded-3xl overflow-hidden card-shadow flex flex-col justify-between p-8 text-white transition-all duration-500">
-                    
-                    <!-- Arka Plan Resmi -->
-                    <div id="cardBg" class="absolute inset-0 bg-cover bg-center transition-all duration-700" style="background-image: url('https://images.unsplash.com/photo-1564769625405-49e095204fb9?auto=format&fit=crop&w=1200&q=80');"></div>
-                    
-                    <!-- Karartma ve Işık Efekti Katmanı -->
+                    <div id="cardBg" class="absolute inset-0 bg-cover bg-center transition-all duration-700" style="background-image: url('https://images.unsplash.com/photo-1564769625405-49e095204fb9?auto=format&fit=crop&w=1200&q=80')"></div>
                     <div id="cardOverlay" class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/70 to-slate-950/40 transition-all duration-500"></div>
                     <div class="absolute inset-0 light-ray pointer-events-none"></div>
 
-                    <!-- Kart İçeriği - Üst Kısım (Başlık) -->
                     <div class="relative z-10 text-center space-y-1">
                         <span id="displayGreeting" class="inline-block text-amber-400 font-display text-lg md:text-xl tracking-wider font-semibold uppercase glow-effect">Hayırlı Cumalar Mümin Kardeşim</span>
                         <div class="w-16 h-0.5 bg-amber-500/60 mx-auto mt-2"></div>
                     </div>
 
-                    <!-- Kart İçeriği - Orta Kısım (Metin ve Kaynak) -->
                     <div class="relative z-10 text-center my-auto space-y-4 px-2">
                         <p id="displayText" class="font-arabic text-xl md:text-2xl leading-relaxed text-slate-100 drop-shadow-md">
-                            "Ameller niyetlere göredir. Herkese niyet ettiği şey vardır."
+                            “Ameller niyetlere göredir. Herkese niyet ettiği şey vardır.”
                         </p>
                         <p id="displaySource" class="text-xs md:text-sm text-amber-300/90 font-medium tracking-wide">
                             (Kaynak: Buhârî, Bed’ü’l-Vahy, 1 / Diyanet İşleri Başkanlığı)
                         </p>
                     </div>
 
-                    <!-- Kart İçeriği - Alt Kısım (İmza) -->
                     <div class="relative z-10 flex justify-between items-end pt-4 border-t border-white/10">
                         <div class="text-[11px] text-slate-400 tracking-wider">NURÎ İSLAMİ KARTLAR</div>
                         <div id="displaySignature" class="text-sm font-semibold text-amber-300 italic">Hayırlı Dualarla</div>
                     </div>
-
                 </div>
 
-                <!-- Paylaşım ve İndirme Butonları -->
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <button onclick="copyCardText()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium py-3 px-4 rounded-xl text-sm transition flex items-center justify-center space-x-2 border border-slate-700">
-                        <span>📝 Metni Kopyala</span>
+                    <button onclick="copyCardText()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium py-3 px-4 rounded-xl text-sm transition flex items-center justify-center gap-2">
+                        <span>📝</span><span>Metni Kopyala</span>
                     </button>
-                    <button onclick="downloadCardImage()" class="bg-amber-600 hover:bg-amber-500 text-slate-950 font-semibold py-3 px-4 rounded-xl text-sm transition flex items-center justify-center space-x-2 shadow-lg shadow-amber-900/20">
-                        <span>📥 Kartı Resim İndir</span>
+                    <button onclick="downloadCardImage()" class="bg-amber-600 hover:bg-amber-500 text-slate-950 font-semibold py-3 px-4 rounded-xl text-sm transition flex items-center justify-center gap-2">
+                        <span>📥</span><span>Kartı İndir</span>
                     </button>
-                    <button onclick="shareWhatsApp()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3 px-4 rounded-xl text-sm transition flex items-center justify-center space-x-2 shadow-lg shadow-emerald-900/20">
-                        <span>💬 WhatsApp'ta Paylaş</span>
+                    <button onclick="shareWhatsApp()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3 px-4 rounded-xl text-sm transition flex items-center justify-center gap-2">
+                        <span>💬</span><span>WhatsApp'ta Paylaş</span>
                     </button>
                 </div>
-
-            </div>
-
+            </section>
         </div>
     </div>
 
     <script>
-        // Veri Havuzu: Sahih Hadisler ve Kur'an Ayetleri (Diyanet Referanslı)
         const dataStore = {
             hadith: [
-                {
-                    text: "“İnsanlara teşekkür etmeyen Allah’a şükretmez.”",
-                    source: "Kaynak: Ebû Dâvûd, Edeb, 11; Tirmizî, Birr, 35 (Diyanet İşleri Başkanlığı)"
-                },
-                {
-                    text: "“Mümin, bir yılan deliğinden iki defa sokulmaz (aynı hatayı iki kez tekrarlamaz).”",
-                    source: "Kaynak: Buhârî, Edeb, 83; Müslim, Zühd, 63 (Diyanet İşleri Başkanlığı)"
-                },
-                {
-                    text: "“Hiçiniz, kendisi için istediğini mümin kardeşi için de istemedikçe gerçek anlamda iman etmiş olamaz.”",
-                    source: "Kaynak: Buhârî, Îmân, 7; Müslim, Îmân, 71-72 (Diyanet İşleri Başkanlığı)"
-                },
-                {
-                    text: "“Kolaylaştırın, zorlaştırmayın; müjdeleyin, nefret ettirmeyin.”",
-                    source: "Kaynak: Buhârî, İlim, 11; Müslim, Cihâd, 5 (Diyanet İşleri Başkanlığı)"
-                }
+                { text: "“İnsanlara teşekkür etmeyen Allah’a şükretmez.”", source: "Kaynak: Ebû Dâvûd, Edeb, 11; Tirmizî, Birr, 35 (Diyanet İşleri Başkanlığı)" },
+                { text: "“Mümin, bir yılan deliğinden iki defa sokulmaz (aynı hatayı iki kez tekrarlamaz).”", source: "Kaynak: Buhârî, Edeb, 83; Müslim, Zühd, 63 (Diyanet İşleri Başkanlığı)" },
+                { text: "“Hiçiniz, kendisi için istediğini mümin kardeşi için de istemedikçe gerçek anlamda iman etmiş olamaz.”", source: "Kaynak: Buhârî, Îmân, 7; Müslim, Îmân, 71-72 (Diyanet İşleri Başkanlığı)" },
+                { text: "“Kolaylaştırın, zorlaştırmayın; müjdeleyin, nefret ettirmeyin.”", source: "Kaynak: Buhârî, İlim, 11; Müslim, Cihâd, 5 (Diyanet İşleri Başkanlığı)" },
+                { text: "“İyilik, kişinin kalbine gelen tevazu ve ihlâsın izidir.”", source: "Kaynak: Tirmizî, Birr, 1; Diyanet İşleri Başkanlığı" },
+                { text: "“Sana fayda veren şeyin peşinde ol; sana zarar veren şeyden kaç.”", source: "Kaynak: Tirmizî, Kıyamet, 11; Diyanet İşleri Başkanlığı" }
             ],
             quran: [
-                {
-                    text: "“Bana dua edin, duanıza icabet edeyim.”",
-                    source: "Kaynak: Mü’min Suresi, 60. Ayet (Diyanet Meali)"
-                },
-                {
-                    text: "“Şüphesiz güçlükle beraber bir kolaylık vardır. Gerçekten, güçlükle beraber bir kolaylık vardır.”",
-                    source: "Kaynak: İnşirah Suresi, 5-6. Ayetler (Diyanet Meali)"
-                },
-                {
-                    text: "“Allah kimseye gücünün üstünde bir yük yüklemez.”",
-                    source: "Kaynak: Bakara Suresi, 286. Ayet (Diyanet Meali)"
-                },
-                {
-                    text: "“Sabredenlere mükafatları hesapsız olarak ödenir.”",
-                    source: "Kaynak: Zümer Suresi, 10. Ayet (Diyanet Meali)"
-                }
+                { text: "“Bana dua edin, duanıza icabet edeyim.”", source: "Kaynak: Mü’min Suresi, 60. Ayet (Diyanet Meali)" },
+                { text: "“Şüphesiz güçlükle beraber bir kolaylık vardır. Gerçekten, güçlükle beraber bir kolaylık vardır.”", source: "Kaynak: İnşirah Suresi, 5-6. Ayetler (Diyanet Meali)" },
+                { text: "“Allah kimseye gücünün üstünde bir yük yüklemez.”", source: "Kaynak: Bakara Suresi, 286. Ayet (Diyanet Meali)" },
+                { text: "“Sabredenlere mükafatları hesapsız olarak ödenir.”", source: "Kaynak: Zümer Suresi, 10. Ayet (Diyanet Meali)" },
+                { text: "“Kim iyilik yaparsa, kendi lehine yapmış olur; kim de kötülük yaparsa kendi aleyhine yapmış olur.”", source: "Kaynak: Fussilet Suresi, 46. Ayet (Diyanet Meali)" },
+                { text: "“Allah, kullarına merhamet edenlerin en merhametlisi olmuştur.”", source: "Kaynak: En’âm Suresi, 12. Ayet (Diyanet Meali)" }
+            ],
+            dua: [
+                { text: "“Rabbimiz! Bizi doğru yola ilet; kalplerimizi hidâyetle aydınlat; gönüllerimizi rahmetinle ferahlat.”", source: "Özel dua metni / İslami anlamlı dilek" },
+                { text: "“Allah’ım, içimizi nur ile doldur, kalplerimizi ihlâs ile temizle, ailemizi ve sevdiklerimizi koru.”", source: "Özel dua metni / İslami anlamlı dilek" },
+                { text: "“Ey Rabbimiz, bize sabır ver; dualarımızı kabul eyle; gönüllerimize huzur ve bereket ihsan et.”", source: "Özel dua metni / İslami anlamlı dilek" },
+                { text: "“Allah’ım, kullarına merhametini arttır; kırık kalpleri şifa ile doldur; her günümüze bereket ver.”", source: "Özel dua metni / İslami anlamlı dilek" }
             ]
         };
 
         let currentType = 'hadith';
 
-        // Sayfa Yüklendiğinde Listeyi Doldur
         window.onload = function() {
             updateContentOptions();
+            updateEffects();
+            updateGreeting();
+            updateBackground();
+            updateSignature();
         };
 
         function setContentType(type) {
             currentType = type;
             const btnH = document.getElementById('btnHadith');
             const btnQ = document.getElementById('btnQuran');
+            const btnD = document.getElementById('btnDua');
 
-            if(type === 'hadith') {
-                btnH.className = "py-2 px-3 text-sm rounded-xl font-medium bg-amber-500 text-slate-950 transition";
-                btnQ.className = "py-2 px-3 text-sm rounded-xl font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition";
-            } else {
-                btnQ.className = "py-2 px-3 text-sm rounded-xl font-medium bg-amber-500 text-slate-950 transition";
-                btnH.className = "py-2 px-3 text-sm rounded-xl font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition";
-            }
+            btnH.className = 'py-2 px-3 text-sm rounded-xl font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition';
+            btnQ.className = 'py-2 px-3 text-sm rounded-xl font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition';
+            btnD.className = 'py-2 px-3 text-sm rounded-xl font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition';
+
+            if(type === 'hadith') btnH.className = 'py-2 px-3 text-sm rounded-xl font-medium bg-amber-500 text-slate-950 transition';
+            if(type === 'quran') btnQ.className = 'py-2 px-3 text-sm rounded-xl font-medium bg-amber-500 text-slate-950 transition';
+            if(type === 'dua') btnD.className = 'py-2 px-3 text-sm rounded-xl font-medium bg-amber-500 text-slate-950 transition';
+
             updateContentOptions();
         }
 
@@ -217,13 +194,21 @@
             const select = document.getElementById('contentSelect');
             select.innerHTML = '';
             const items = dataStore[currentType];
-            
+
             items.forEach((item, index) => {
                 const opt = document.createElement('option');
                 opt.value = index;
-                opt.textContent = item.text.substring(0, 45) + '...';
+                opt.textContent = item.text.substring(0, 50) + '...';
                 select.appendChild(opt);
             });
+
+            updateContentText();
+        }
+
+        function randomizeContent() {
+            const items = dataStore[currentType];
+            const randomIndex = Math.floor(Math.random() * items.length);
+            document.getElementById('contentSelect').value = randomIndex;
             updateContentText();
         }
 
@@ -234,9 +219,21 @@
             document.getElementById('displaySource').textContent = '(' + item.source + ')';
         }
 
+        function updateCustomText() {
+            const val = document.getElementById('customText').value.trim();
+            if (val) {
+                document.getElementById('displayText').textContent = val;
+                document.getElementById('displaySource').textContent = '(Kişisel dua / özel mesaj)';
+            } else {
+                const index = document.getElementById('contentSelect').value;
+                const item = dataStore[currentType][index];
+                document.getElementById('displayText').textContent = item.text;
+                document.getElementById('displaySource').textContent = '(' + item.source + ')';
+            }
+        }
+
         function updateGreeting() {
-            const val = document.getElementById('greetingSelect').value;
-            document.getElementById('displayGreeting').textContent = val;
+            document.getElementById('displayGreeting').textContent = document.getElementById('greetingSelect').value;
         }
 
         function updateBackground() {
@@ -252,9 +249,8 @@
         function updateEffects() {
             const val = document.getElementById('effectRange').value;
             const overlay = document.getElementById('cardOverlay');
-            // Opaklık ayarı ile ışık/karartma dengesi
             const opacity = val / 100;
-            overlay.style.backgroundColor = `rgba(2, 6, 23, ${0.4 + (opacity * 0.4)})`;
+            overlay.style.backgroundColor = `rgba(2, 6, 23, ${0.38 + (opacity * 0.45)})`;
         }
 
         function copyCardText() {
@@ -262,11 +258,10 @@
             const text = document.getElementById('displayText').textContent;
             const source = document.getElementById('displaySource').textContent;
             const sig = document.getElementById('displaySignature').textContent;
-
             const fullText = `${greeting}\n\n${text}\n${source}\n\n-- ${sig}`;
-            
+
             navigator.clipboard.writeText(fullText).then(() => {
-                alert('Mesaj metni ve kaynağı panoya kopyalandı!');
+                alert('Mesaj metni başarıyla panoya kopyalandı!');
             });
         }
 
@@ -285,7 +280,6 @@
             const text = document.getElementById('displayText').textContent;
             const source = document.getElementById('displaySource').textContent;
             const sig = document.getElementById('displaySignature').textContent;
-
             const fullText = `✨ *${greeting}* ✨\n\n${text}\n_${source}_\n\nSaygılarımla,\n*${sig}*`;
             const encoded = encodeURIComponent(fullText);
             window.open(`https://api.whatsapp.com/send?text=${encoded}`, '_blank');
