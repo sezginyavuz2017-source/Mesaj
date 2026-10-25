@@ -95,6 +95,7 @@
     const key = category.value;
     $('#cardTitle').textContent = key === 'quran' ? 'Kur’an’dan bir ayet' : window.MesajData.titles[key];
     $('#cardKicker').textContent = window.MesajData.categories[key] || 'KUR’AN-I KERİM’DEN';
+    $('#cardKicker').classList.toggle('hidden', key === 'quran');
     $('#customBlock').classList.toggle('hidden', key !== 'custom');
     $('#messagePickerBlock').classList.toggle('hidden', key === 'custom');
     $('#arabicToggle').classList.toggle('hidden', !['quran', 'esma'].includes(key));
