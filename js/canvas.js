@@ -1,0 +1,33 @@
+(() => {
+  function loadImage(url) { return new Promise((resolve, reject) => { const image = new Image(); image.crossOrigin = 'anonymous'; image.onload = () => resolve(image); image.onerror = reject; image.src = url; }); }
+  async function renderCard(card) {
+    const width = 1080, height = 1480, canvas = document.createElement('canvas'); canvas.width = width; canvas.height = height;
+    const context = canvas.getContext('2d');
+    context.fillStyle = '#405d4c'; context.fillRect(0,0,width,height);
+    const url = card.dataset.image;
+    if (url) { try { const img = await loadImage(url); const scale = Math.max(width/img.width,height/img.height); const w=img.width*scale,h=img.height*scale; context.drawImage(img,(width-w)/2,(height-h)/2,w,h); } catch { /* The solid background is a useful fallback when an image disallows export. */ } }
+    const opacity = Number(card.dataset.overlay || 38)/100;
+    const gradient = context.createLinearGradient(0,0,0,height); gradient.addColorStop(0,`rgba(10,26,20,${opacity*.55})`); gradient.addColorStop(.48,`rgba(10,26,20,${opacity*.74})`); gradient.addColorStop(1,`rgba(10,26,20,${Math.min(.94,opacity+0.32)})`);
+    context.fillStyle=gradient; context.fillRect(0,0,width,height); context.textAlign='center'; context.fillStyle='#e5c697';
+    context.font='48px Georgia'; context.fillText('✳',width/2,320); context.fillStyle='#ead7b5'; context.font='22px Arial'; context.fillText(card.querySelector('#cardKicker').textContent, width/2,390);
+    context.fillStyle='#fffdf2'; context.font='bold 62px Georgia'; wrapText(context,card.querySelector('#cardTitle').textContent,width/2,475,870,78);
+    context.fillStyle='#e6c896'; context.font='22px Georgia'; context.fillText('—  ✦  —',width/2,605);
+    let textY=690;
+    for(const node of card.querySelector('#textStack').children){
+      const value=node.textContent.trim();if(!value||node.classList.contains('hidden'))continue;
+      let font='38px Georgia',color='#fffdf2',lineHeight=62,maxWidth=820,direction='ltr';
+      if(node.id==='cardArabic'){font='44px Amiri, serif';color='#f2dfbd';lineHeight=72;maxWidth=850;direction='rtl';}
+      if(node.id==='cardSource'){font='22px Arial';color='#fffdf2';lineHeight=34;maxWidth=850;}
+      if(node.id==='cardSignature'){font='italic 40px Georgia';lineHeight=56;maxWidth=850;}
+      context.font=font;context.fillStyle=color;context.direction=direction;context.globalAlpha=node.id==='cardSource'?.85:1;
+      const lines=Math.max(1,Math.ceil(context.measureText(value).width/maxWidth));
+      if(node.id==='cardSource'||node.id==='cardSignature')context.fillText(value,width/2,textY);
+      else wrapText(context,value,width/2,textY,maxWidth,lineHeight);
+      textY+=lines*lineHeight+18;
+    }
+    context.globalAlpha=1;context.direction='ltr';context.fillStyle='#ead7b5';context.font='17px Arial';context.fillText('SEVGİYLE HAZIRLANDI',width/2,1380);
+    return canvas;
+  }
+  function wrapText(ctx,text,x,y,maxWidth,lineHeight){const words=text.trim().split(/\s+/);let line='',lines=[];for(const word of words){const next=line?`${line} ${word}`:word;if(ctx.measureText(next).width>maxWidth&&line){lines.push(line);line=word;}else line=next;}if(line)lines.push(line);const start=y-(lines.length-1)*lineHeight/2;lines.forEach((item,index)=>ctx.fillText(item,x,start+index*lineHeight));}
+  window.MesajCanvas = { renderCard };
+})();

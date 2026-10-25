@@ -1,495 +1,89 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mesaj</title>
-    <meta name="description" content="İslami mesaj kartları, dua metinleri ve bayram-cuma-kandil kutlamaları için hazır tasarım aracı.">
-    <meta property="og:title" content="Mesaj">
-    <meta property="og:description" content="Arka planda otomatik İslami görsel seçimi ve WhatsApp paylaşım sistemi ile mesaj kartları oluşturun.">
-    <meta property="og:type" content="website">
-    <meta property="og:image" content="https://images.unsplash.com/photo-1564769625405-49e095204fb9?auto=format&fit=crop&w=1200&q=80">
-    <meta property="og:image:alt" content="İslami mesaj kartı arka plan görseli">
-    <meta property="og:url" content="https://sezginyavuz2017-source.github.io/Mesaj/">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Mesaj">
-    <meta name="twitter:description" content="İslami mesaj kartları, dua metinleri ve bayram-cuma-kandil kutlamaları için hazır tasarım aracı.">
-    <meta name="twitter:image" content="https://images.unsplash.com/photo-1564769625405-49e095204fb9?auto=format&fit=crop&w=1200&q=80">
-    <link rel="canonical" href="https://sezginyavuz2017-source.github.io/Mesaj/">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        .font-arabic { font-family: 'Amiri', serif; }
-        .font-display { font-family: 'Playfair Display', serif; }
-        .glow-effect { text-shadow: 0 0 20px rgba(255, 215, 0, 0.6), 0 0 40px rgba(255, 215, 0, 0.3); }
-        .card-shadow { box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5); }
-        .card-image {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-        .mini-thumb {
-            width: 72px;
-            height: 72px;
-            border-radius: 14px;
-            object-fit: cover;
-            border: 2px solid transparent;
-            transition: transform 0.2s ease, border-color 0.2s ease;
-            cursor: pointer;
-            background: #0f172a;
-        }
-        .mini-thumb:hover, .mini-thumb.active {
-            transform: translateY(-2px);
-            border-color: rgba(251, 191, 36, 0.9);
-        }
-        .no-effects {
-            background: linear-gradient(180deg, rgba(2,6,23,0.72), rgba(2,6,23,0.58));
-        }
-        .search-suggestion {
-            border: 1px solid rgba(148,163,184,0.4);
-            background: rgba(15,23,42,0.7);
-            color: #cbd5e1;
-            font-size: 11px;
-            padding: 6px 10px;
-            border-radius: 999px;
-            transition: all 0.2s ease;
-            cursor: pointer;
-        }
-        .search-suggestion:hover {
-            border-color: rgba(251,191,36,0.9);
-            background: rgba(30,41,59,0.9);
-            color: #f8fafc;
-        }
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f4ed">
+  <meta name="description" content="Kişiye özel, güzel mesaj kartları tasarlayın ve sevdiklerinizle paylaşın.">
+  <title>Mesaj — Güzel sözler, güzel anlar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/fetcher.js" defer></script>
+  <script src="js/canvas.js" defer></script>
+  <script src="js/share.js" defer></script>
+  <script src="js/app.js" defer></script>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col items-center justify-start p-4 md:p-8">
+<body>
+  <header class="topbar">
+    <a class="brand" href="#top" aria-label="Mesaj ana sayfa"><span class="brand-mark">✳</span> mesaj<span class="brand-dot">.</span></a>
+    <span class="top-note">Güzel sözler, güzel anlar</span>
+    <a class="top-link" href="#olustur">Kartını oluştur <span aria-hidden="true">↗</span></a>
+  </header>
 
-    <div class="max-w-5xl w-full mx-auto space-y-8">
-        <header class="text-center space-y-2">
-            <h1 class="text-3xl md:text-4xl font-display font-bold text-amber-400 tracking-wide">Mesaj</h1>
-            <p class="text-slate-400 text-sm md:text-base">Arka plan görseli seçimi, tema bazlı arama ve WhatsApp paylaşım sistemi.</p>
-        </header>
+  <main id="top">
+    <section class="intro">
+      <div class="intro-copy">
+        <span class="eyebrow"><span class="eyebrow-line"></span> SEVGİYLE HAZIRLANDI</span>
+        <h1>Bir güzel söz,<br><em>bir gönüle</em> dokunur.</h1>
+        <p>İçinden geçenleri zarif bir karta dönüştür. Seç, kişiselleştir ve sevdiklerinle paylaş.</p>
+      </div>
+      <div class="intro-stamp" aria-hidden="true"><span>✦</span><small>PAYLAŞ<br>GÜZELLEŞSİN</small></div>
+    </section>
 
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
-            <div class="md:col-span-5 space-y-5 bg-slate-900/80 p-6 rounded-2xl border border-slate-800 backdrop-blur-md">
-                <div>
-                    <label class="block text-sm font-medium text-amber-300 mb-2">İçerik Kategorisi</label>
-                    <div class="grid grid-cols-2 gap-2">
-                        <button onclick="setContentType('cuma')" id="btnCuma" class="py-2 px-3 text-xs md:text-sm rounded-xl font-medium bg-amber-500 text-slate-950 transition">Cuma Mesajları</button>
-                        <button onclick="setContentType('bayram')" id="btnBayram" class="py-2 px-3 text-xs md:text-sm rounded-xl font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Bayram</button>
-                        <button onclick="setContentType('kandil')" id="btnKandil" class="py-2 px-3 text-xs md:text-sm rounded-xl font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Kandil</button>
-                        <button onclick="setContentType('quran')" id="btnQuran" class="py-2 px-3 text-xs md:text-sm rounded-xl font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition">Kur'an Ayeti</button>
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-amber-300 mb-2">Metin ve Kaynak Seçimi</label>
-                    <select id="contentSelect" onchange="updateContentText()" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:border-amber-500"></select>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-amber-300 mb-2">Kart Üst Başlığı</label>
-                    <input type="text" id="greetingInput" value="Hayırlı Cumalar" oninput="updateGreeting()" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:border-amber-500">
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-amber-300 mb-2">Arka Plan Görseli</label>
-                    <div class="flex gap-2">
-                        <input id="imageSearchInput" type="text" value="mosque" placeholder="mosque, ramadan, islamic calligraphy..." class="flex-1 bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:border-amber-500">
-                        <button onclick="searchImages()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold px-4 py-3 rounded-xl text-sm transition">Search</button>
-                    </div>
-
-                    <div class="mt-3 mb-2">
-                        <label class="block text-xs font-medium text-slate-400 mb-2">Similar search source</label>
-                        <select id="searchSourceSelect" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-sm text-slate-200 focus:outline-none focus:border-amber-500">
-                            <option value="wikimedia">Wikimedia</option>
-                            <option value="unsplash">Unsplash</option>
-                            <option value="all">Mix</option>
-                        </select>
-                    </div>
-
-                    <div class="mt-3 flex flex-wrap gap-2" id="searchSuggestions"></div>
-
-                    <div class="flex gap-2 mt-3">
-                        <button type="button" onclick="document.getElementById('imageUpload').click()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium py-2.5 px-3 rounded-xl text-sm transition border border-slate-700">
-                            📷 Telefon Görseli Yükle
-                        </button>
-                        <input id="imageUpload" type="file" accept="image/*" class="hidden">
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-amber-300 mb-2">Kullanılacak Görsel Seçimi</label>
-                    <div id="imageThumbs" class="flex flex-wrap gap-2 justify-start"></div>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-amber-300 mb-2">Gönderen Adı (İmza)</label>
-                    <input type="text" id="signatureInput" value="Sezgin Yavuz" oninput="updateSignature()" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:border-amber-500">
-                </div>
-            </div>
-
-            <div class="md:col-span-7 flex flex-col space-y-6">
-                <div id="previewCard" class="relative w-full aspect-[4/5] rounded-3xl overflow-hidden card-shadow flex flex-col justify-between p-8 text-white transition-all duration-500">
-                    <img id="cardImage" class="card-image" src="https://images.unsplash.com/photo-1564769625405-49e095204fb9?auto=format&fit=crop&w=1200&q=80" alt="İslami mesaj kartı arka plan görseli" aria-hidden="true">
-                    <div id="cardOverlay" class="absolute inset-0 no-effects transition-all duration-500"></div>
-
-                    <div class="relative z-10 text-center space-y-1">
-                        <span id="displayGreeting" class="inline-block text-amber-400 font-display text-lg md:text-xl tracking-wider font-semibold uppercase glow-effect">Hayırlı Cumalar</span>
-                        <div class="w-16 h-0.5 bg-amber-500/60 mx-auto mt-2"></div>
-                    </div>
-
-                    <div class="relative z-10 text-center my-auto space-y-4 px-2">
-                        <p id="displayText" class="font-arabic text-xl md:text-2xl leading-relaxed text-slate-100 drop-shadow-md">
-                            "Kalpler ancak Allah'ı anmakla huzur bulur."
-                        </p>
-                        <p id="displaySource" class="text-xs md:text-sm text-amber-300/90 font-medium tracking-wide">
-                            (Kaynak: Ra'd Suresi, 28. Ayet / Diyanet Meali)
-                        </p>
-                    </div>
-
-                    <div class="relative z-10 flex justify-end items-end pt-4 border-t border-white/10">
-                        <div id="displaySignature" class="text-sm font-semibold text-amber-300 italic">Sezgin Yavuz</div>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <button onclick="copyCardText()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium py-3 px-4 rounded-xl text-sm transition flex items-center justify-center space-x-2 border border-slate-700">
-                        <span>📝 Metni Kopyala</span>
-                    </button>
-                    <button onclick="downloadCardImage()" class="bg-amber-600 hover:bg-amber-500 text-slate-950 font-semibold py-3 px-4 rounded-xl text-sm transition flex items-center justify-center space-x-2 shadow-lg shadow-amber-900/20">
-                        <span>📥 Kartı Resim İndir</span>
-                    </button>
-                    <button onclick="shareWhatsApp()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3 px-4 rounded-xl text-sm transition flex items-center justify-center space-x-2 shadow-lg shadow-emerald-900/20">
-                        <span>💬 WhatsApp'ta Paylaş</span>
-                    </button>
-                </div>
-            </div>
+    <section class="workspace" id="olustur" aria-label="Kart oluşturucu">
+      <div class="editor panel">
+        <div class="panel-heading"><div><span class="step">01</span><h2>Mesajını seç</h2></div><span class="heading-note">İçinden geldiği gibi</span></div>
+        <div class="field-block">
+          <label class="field-label" for="category">KARTIN KONUSU</label>
+          <select id="category" class="select-control">
+            <option value="cuma">Hayırlı Cuma</option><option value="bayram">Bayram</option><option value="kandil">Kandil</option><option value="dua">Güzel bir dua</option><option value="hadith">Hadis</option><option value="quran">Kur'an ayeti</option><option value="custom">Kendi mesajım</option>
+          </select>
         </div>
-    </div>
+        <div class="field-block" id="messagePickerBlock">
+          <label class="field-label" for="messageChoice">MESAJIN</label>
+          <select id="messageChoice" class="select-control"></select>
+          <div class="message-result"><p id="messageText"></p><small id="messageSource"></small></div>
+          <button class="quiet-button" id="anotherMessage" type="button"><span aria-hidden="true">↻</span> Başka bir mesaj seç</button>
+          <label class="arabic-toggle hidden" id="arabicToggle"><input id="showArabic" type="checkbox" checked> Arapça aslını da göster</label>
+          <div class="field-block order-block"><label class="field-label" for="textOrder">KARTTA METİN SIRASI</label><select id="textOrder" class="select-control"><option value="message,arabic,source,signature">Türkçe · Arapça · Kaynak · İmza</option><option value="arabic,message,source,signature">Arapça · Türkçe · Kaynak · İmza</option><option value="signature,message,arabic,source">İmza · Türkçe · Arapça · Kaynak</option></select></div>
+        </div>
+        <div class="field-block hidden" id="customBlock">
+          <label class="field-label" for="customMessage">KENDİ SÖZÜN</label>
+          <textarea id="customMessage" rows="3" maxlength="240" placeholder="Kalbinden geçenleri yaz..."></textarea>
+          <div class="char-count"><span id="charCount">0</span> / 240</div>
+        </div>
+        <div class="divider"></div>
 
-    <script>
-        const dataStore = {
-            cuma: [
-                { text: "“Kalpler ancak Allah'ı anmakla huzur bulur.”", source: "Kaynak: Ra'd Suresi, 28. Ayet (Diyanet Meali)" },
-                { text: "“Şüphesiz Allah sabredenlerle beraberdir. Bu Cuma sabırla beklenen her hayrın vakti olsun.”", source: "Kaynak: Bakara Suresi, 153. Ayet" },
-                { text: "“Her zorlukla beraber bir kolaylık vardır. Cuma, umutları tazeleyen bir rahmet günüdür.”", source: "Kaynak: İnşirah Suresi, 5-6. Ayetler" },
-                { text: "“Rabbim yüreğimize ferahlık, ömrümüze bereket, kazancımıza helallik nasip eyle. Hayırlı Cumalar.”", source: "Kaynak: Diyanet Dualar ve Temenniler" }
-            ],
-            bayram: [
-                { text: "“Rabbim birliğimizi, beraberliğimizi daim kılsın. Sevdiklerinizle birlikte huzur dolu, bereketli bir bayram geçirmeniz dileğiyle.”", source: "Kaynak: Bayram Mesajları Havuzu" },
-                { text: "“Küskünlerin barıştığı, sevenlerin bir araya geldiği, rahmet ve bereket dolu bir bayram dilerim. Bayramınız mübarek olsun.”", source: "Kaynak: Bayram Özel Mesajı" }
-            ],
-            kandil: [
-                { text: "“Bu mübarek kandil gecesinde edilen tüm samimi duaların göğe yükselip rahmet olarak hanelerinize yağmasını dilerim.”", source: "Kaynak: Kandil Mesajları Havuzu" },
-                { text: "“Allah'ım! Sen affedicisin, affetmeyi seversin, bizi de bu mübarek kandil gecesi hürmetine affeyle.”", source: "Kaynak: Tirmizî, Deavât, 84" }
-            ],
-            quran: [
-                { text: "“Bana dua edin, duanıza icabet edeyim.”", source: "Kaynak: Mü’min Suresi, 60. Ayet (Diyanet Meali)" },
-                { text: "“Allah kimseye gücünün üstünde bir yük yüklemez.”", source: "Kaynak: Bakara Suresi, 286. Ayet (Diyanet Meali)" }
-            ]
-        };
+        <div class="panel-heading compact"><div><span class="step">02</span><h2>Görselini seç</h2></div></div>
+        <div class="search-row"><label class="sr-only" for="imageSearch">Görsel ara</label><input id="imageSearch" type="search" value="mosque" placeholder="Örn. cami, gün batımı..."><button id="searchButton" class="icon-button" type="button" aria-label="Görsel ara">⌕</button></div>
+        <div class="search-options"><span>Kaynak</span><select id="imageSource" aria-label="Görsel kaynağı"><option value="commons">Wikimedia Commons</option><option value="unsplash">Unsplash koleksiyonu</option></select><span class="free-label">ÜCRETSİZ</span></div>
+        <div class="suggestions" aria-label="Görsel önerileri"><button type="button" data-query="mosque">Cami · Mosque</button><button type="button" data-query="lantern">Fener · Lantern</button><button type="button" data-query="sunset">Gün batımı · Sunset</button><button type="button" data-query="nature">Doğa · Nature</button></div>
+        <div id="imageGrid" class="image-grid" aria-live="polite"></div>
+        <label class="upload-button" for="imageUpload"><span aria-hidden="true">＋</span> Kendi fotoğrafını yükle<input id="imageUpload" type="file" accept="image/png,image/jpeg,image/webp"></label>
 
-        let currentType = 'cuma';
-        const imageFallbacks = [
-            'https://images.unsplash.com/photo-1564769625405-49e095204fb9?auto=format&fit=crop&w=1200&q=80',
-            'https://images.unsplash.com/photo-1543353071-873f17a7a08c?auto=format&fit=crop&w=1200&q=80',
-            'https://images.unsplash.com/photo-1534620808146-d33bb7a3fd86?auto=format&fit=crop&w=1200&q=80',
-            'https://images.unsplash.com/photo-1517486800575-8e5eacb3e94d?auto=format&fit=crop&w=1200&q=80',
-            'https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=1200&q=80'
-        ];
+        <div class="divider"></div>
+        <div class="panel-heading compact"><div><span class="step">03</span><h2>Son dokunuşlar</h2></div></div>
+        <div class="field-block"><label class="field-label" for="senderName">İMZA</label><input class="text-control" id="senderName" type="text" maxlength="32" placeholder="Adını yaz"></div>
+        <div class="field-block"><label class="field-label" for="fontChoice">YAZI KARAKTERİ</label><select class="select-control" id="fontChoice"><option value="serif">Zarif</option><option value="sans">Sade</option><option value="script">El yazısı</option></select></div>
+        <div class="field-block range-block"><div class="range-heading"><label class="field-label" for="overlayRange">GÖRSEL TONU</label><span id="rangeValue">%38</span></div><input id="overlayRange" type="range" min="10" max="75" value="38"></div>
+      </div>
 
-        const searchSuggestions = [
-            { label: 'Mosque', value: 'mosque' },
-            { label: 'Ramadan', value: 'ramadan' },
-            { label: 'Prayer', value: 'prayer' },
-            { label: 'Islamic calligraphy', value: 'islamic calligraphy' },
-            { label: 'Cami', value: 'cami' },
-            { label: 'Namaz', value: 'namaz' },
-            { label: 'Kur'an', value: 'quran' },
-            { label: 'Ramazan', value: 'ramazan' }
-        ];
-
-        const unsplashCatalog = {
-            mosque: [
-                'https://images.unsplash.com/photo-1564769625405-49e095204fb9?auto=format&fit=crop&w=800&q=80',
-                'https://images.unsplash.com/photo-1543353071-873f17a7a08c?auto=format&fit=crop&w=800&q=80',
-                'https://images.unsplash.com/photo-1517486800575-8e5eacb3e94d?auto=format&fit=crop&w=800&q=80'
-            ],
-            ramadan: [
-                'https://images.unsplash.com/photo-1517486800575-8e5eacb3e94d?auto=format&fit=crop&w=800&q=80',
-                'https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=800&q=80',
-                'https://images.unsplash.com/photo-1534620808146-d33bb7a3fd86?auto=format&fit=crop&w=800&q=80'
-            ],
-            prayer: [
-                'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&w=800&q=80',
-                'https://images.unsplash.com/photo-1507692049790-de58290a4334?auto=format&fit=crop&w=800&q=80',
-                'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=800&q=80'
-            ],
-            'islamic calligraphy': [
-                'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=800&q=80',
-                'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=800&q=80',
-                'https://images.unsplash.com/photo-1516321497487-e288fb19713f?auto=format&fit=crop&w=800&q=80'
-            ],
-            quran: [
-                'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=800&q=80',
-                'https://images.unsplash.com/photo-1507680434567-5739c752279c?auto=format&fit=crop&w=800&q=80',
-                'https://images.unsplash.com/photo-1515343480029-43cdfe6b6aae?auto=format&fit=crop&w=800&q=80'
-            ],
-            cami: [
-                'https://images.unsplash.com/photo-1543353071-873f17a7a08c?auto=format&fit=crop&w=800&q=80',
-                'https://images.unsplash.com/photo-1564769625405-49e095204fb9?auto=format&fit=crop&w=800&q=80',
-                'https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=800&q=80'
-            ],
-            namaz: [
-                'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&w=800&q=80',
-                'https://images.unsplash.com/photo-1507692049790-de58290a4334?auto=format&fit=crop&w=800&q=80',
-                'https://images.unsplash.com/photo-1543353071-873f17a7a08c?auto=format&fit=crop&w=800&q=80'
-            ],
-            ramazan: [
-                'https://images.unsplash.com/photo-1517486800575-8e5eacb3e94d?auto=format&fit=crop&w=800&q=80',
-                'https://images.unsplash.com/photo-1534620808146-d33bb7a3fd86?auto=format&fit=crop&w=800&q=80',
-                'https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=800&q=80'
-            ]
-        };
-
-        function buildSearchSuggestions() {
-            const container = document.getElementById('searchSuggestions');
-            container.innerHTML = '';
-            searchSuggestions.forEach(s => {
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.className = 'search-suggestion';
-                btn.textContent = s.label;
-                btn.onclick = () => {
-                    document.getElementById('imageSearchInput').value = s.value;
-                    searchImages();
-                };
-                container.appendChild(btn);
-            });
-        }
-
-        const uploadInput = document.getElementById('imageUpload');
-        if (uploadInput) {
-            uploadInput.addEventListener('change', function (event) {
-                const file = event.target.files && event.target.files[0];
-                if (!file || !file.type.startsWith('image/')) return;
-
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    const uploaded = e.target.result;
-                    const mixed = [uploaded, ...imageFallbacks].slice(0, 8);
-                    renderThumbs(mixed.map(url => ({ preview: url, full: url })), uploaded);
-                    setCardBackgroundByUrl(uploaded);
-                };
-                reader.readAsDataURL(file);
-            });
-        }
-
-        function updateSocialPreviewMeta(imageUrl) {
-            const metaOg = document.querySelector('meta[property="og:image"]');
-            const metaTwitter = document.querySelector('meta[name="twitter:image"]');
-            const metaOgAlt = document.querySelector('meta[property="og:image:alt"]');
-            if (metaOg) metaOg.setAttribute('content', imageUrl);
-            if (metaTwitter) metaTwitter.setAttribute('content', imageUrl);
-            if (metaOgAlt) metaOgAlt.setAttribute('content', 'İslami mesaj kartı önizleme görseli');
-        }
-
-        function setCardImage(imageUrl, altText) {
-            const img = document.getElementById('cardImage');
-            img.src = imageUrl;
-            img.alt = altText;
-            updateSocialPreviewMeta(imageUrl);
-        }
-
-        function setCardBackgroundByUrl(url) {
-            setCardImage(url, 'İslami mesaj kartı arka plan görseli');
-        }
-
-        function buildUnsplashResults(query) {
-            const cleaned = (query || 'mosque').toLowerCase().trim();
-            const keys = Object.keys(unsplashCatalog);
-            const matched = keys.find(key => cleaned.includes(key) || key.includes(cleaned));
-            const source = matched ? unsplashCatalog[matched] : unsplashCatalog.mosque;
-            return source.map(url => ({ preview: url, full: url.replace('w=800', 'w=1600').replace('w=800', 'w=1600') }));
-        }
-
-        function loadWikimediaImages(query) {
-            const cleanQuery = (query || 'mosque').trim();
-            const apiUrl = `https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(cleanQuery)}&gsrnamespace=6&gsrlimit=8&prop=imageinfo&iiprop=url|size&iiurlwidth=400&iiurlheight=400&format=json&origin=*`;
-
-            return fetch(apiUrl)
-                .then(res => res.json())
-                .then(data => {
-                    const pages = data?.query?.pages ? Object.values(data.query.pages) : [];
-                    const images = pages
-                        .map(page => {
-                            const info = page.imageinfo && page.imageinfo[0];
-                            if (!info) return null;
-                            return {
-                                preview: info.thumburl || info.url,
-                                full: info.url || info.thumburl
-                            };
-                        })
-                        .filter(Boolean);
-
-                    if (images.length > 0) return images;
-                    return imageFallbacks.map(url => ({ preview: url, full: url }));
-                })
-                .catch(() => imageFallbacks.map(url => ({ preview: url, full: url })));
-        }
-
-        function fetchSearchResults(query) {
-            const source = document.getElementById('searchSourceSelect')?.value || 'wikimedia';
-            if (source === 'unsplash') {
-                return Promise.resolve(buildUnsplashResults(query));
-            }
-            if (source === 'all') {
-                return Promise.all([
-                    loadWikimediaImages(query),
-                    Promise.resolve(buildUnsplashResults(query))
-                ]).then(([wiki, unsplash]) => [...wiki, ...unsplash].slice(0, 10));
-            }
-            return loadWikimediaImages(query);
-        }
-
-        function renderThumbs(results, activeUrl) {
-            const thumbs = document.getElementById('imageThumbs');
-            thumbs.innerHTML = '';
-
-            results.forEach(item => {
-                const img = document.createElement('img');
-                img.src = item.preview || item.full || item;
-                img.alt = 'Seçilebilir arka plan görseli';
-                img.className = 'mini-thumb ' + ((item.full || item.preview || item) === activeUrl ? 'active' : '');
-                img.loading = 'lazy';
-                img.onclick = () => {
-                    const url = item.full || item.preview || item;
-                    setCardBackgroundByUrl(url);
-                    document.querySelectorAll('.mini-thumb').forEach(el => el.classList.remove('active'));
-                    img.classList.add('active');
-                };
-                thumbs.appendChild(img);
-            });
-        }
-
-        function searchImages() {
-            const query = document.getElementById('imageSearchInput').value.trim() || 'mosque';
-            fetchSearchResults(query).then(results => {
-                const chosen = results[0];
-                const chosenFull = chosen && (chosen.full || chosen.preview || chosen);
-                renderThumbs(results, chosenFull);
-                if (chosenFull) setCardBackgroundByUrl(chosenFull);
-            });
-        }
-
-        function seedRandomThemeImages() {
-            const themes = ['mosque', 'prayer', 'ramadan', 'islamic calligraphy', 'garden', 'cami'];
-            const picked = themes[Math.floor(Math.random() * themes.length)];
-            document.getElementById('imageSearchInput').value = picked;
-            searchImages();
-        }
-
-        window.onload = function() {
-            buildSearchSuggestions();
-            updateContentOptions();
-            seedRandomThemeImages();
-        };
-
-        function setContentType(type) {
-            currentType = type;
-            const buttons = {
-                cuma: document.getElementById('btnCuma'),
-                bayram: document.getElementById('btnBayram'),
-                kandil: document.getElementById('btnKandil'),
-                quran: document.getElementById('btnQuran')
-            };
-
-            const greetingInput = document.getElementById('greetingInput');
-            if(type === 'cuma') greetingInput.value = "Hayırlı Cumalar";
-            else if(type === 'bayram') greetingInput.value = "Bayramınız Mübarek Olsun";
-            else if(type === 'kandil') greetingInput.value = "Hayırlı Kandiller";
-            else if(type === 'quran') greetingInput.value = "Cumanız Mübarek Olsun";
-            updateGreeting();
-
-            Object.keys(buttons).forEach(key => {
-                if(key === type) {
-                    buttons[key].className = "py-2 px-3 text-xs md:text-sm rounded-xl font-medium bg-amber-500 text-slate-950 transition";
-                } else {
-                    buttons[key].className = "py-2 px-3 text-xs md:text-sm rounded-xl font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 transition";
-                }
-            });
-
-            updateContentOptions();
-        }
-
-        function updateContentOptions() {
-            const select = document.getElementById('contentSelect');
-            select.innerHTML = '';
-            const items = dataStore[currentType];
-            items.forEach((item, index) => {
-                const opt = document.createElement('option');
-                opt.value = index;
-                opt.textContent = item.text.substring(0, 42) + '...';
-                select.appendChild(opt);
-            });
-            updateContentText();
-        }
-
-        function updateContentText() {
-            const index = document.getElementById('contentSelect').value;
-            const item = dataStore[currentType][index];
-            document.getElementById('displayText').textContent = item.text;
-            document.getElementById('displaySource').textContent = '(' + item.source + ')';
-        }
-
-        function updateGreeting() {
-            const val = document.getElementById('greetingInput').value;
-            document.getElementById('displayGreeting').textContent = val || 'Hayırlı Cumalar';
-        }
-
-        function updateSignature() {
-            const val = document.getElementById('signatureInput').value;
-            document.getElementById('displaySignature').textContent = val;
-        }
-
-        function copyCardText() {
-            const greeting = document.getElementById('displayGreeting').textContent;
-            const text = document.getElementById('displayText').textContent;
-            const source = document.getElementById('displaySource').textContent;
-            const sig = document.getElementById('displaySignature').textContent;
-            const fullText = `${greeting}\n\n${text}\n${source}\n\n-- ${sig}`;
-            navigator.clipboard.writeText(fullText).then(() => {
-                alert('Mesaj metni ve kaynağı başarıyla kopyalandı!');
-            }).catch(() => {
-                alert('Tarayıcı izni gerekiyor.');
-            });
-        }
-
-        function downloadCardImage() {
-            const card = document.getElementById('previewCard');
-            html2canvas(card, { scale: 2, useCORS: true }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = 'islami-mesaj-karti.png';
-                link.href = canvas.toDataURL('image/png');
-                link.click();
-            });
-        }
-
-        function shareWhatsApp() {
-            const greeting = document.getElementById('displayGreeting').textContent;
-            const text = document.getElementById('displayText').textContent;
-            const source = document.getElementById('displaySource').textContent;
-            const sig = document.getElementById('displaySignature').textContent;
-            const fullText = `✨ *${greeting}* ✨\n\n${text}\n_${source}_\n\nSaygılarımla,\n*${sig}*`;
-            const encoded = encodeURIComponent(fullText);
-            window.open(`https://api.whatsapp.com/send?text=${encoded}`, '_blank');
-        }
-    </script>
+      <aside class="preview-column">
+        <div class="preview-heading"><div><span class="step">ÖNİZLEME</span><h2>Senin kartın</h2></div><span class="live-indicator"><i></i> CANLI</span></div>
+        <div class="card-stage">
+          <article id="greetingCard" class="greeting-card font-serif" aria-label="Mesaj kartı önizlemesi">
+            <div class="card-image" id="cardImage"></div><div class="card-shade" id="cardShade"></div>
+            <div class="card-content"><span class="card-ornament" aria-hidden="true">✳</span><p class="card-kicker" id="cardKicker">GÖNÜLDEN GÖNÜLE</p><h3 id="cardTitle">Güzel bir gün olsun</h3><div class="card-rule"><span></span> ✦ <span></span></div><div class="text-stack" id="textStack"><p class="card-arabic hidden" id="cardArabic" lang="ar" dir="rtl"></p><p class="card-message" id="cardMessage"></p><p class="card-source" id="cardSource"></p><p class="card-signature" id="cardSignature"></p></div><span class="card-foot">SEVGİYLE HAZIRLANDI</span></div>
+          </article>
+        </div>
+        <div class="share-actions"><button id="downloadButton" class="action-button primary"><span>↓</span> Kartı indir</button><button id="whatsappButton" class="action-button secondary"><span>↗</span> WhatsApp</button><button id="telegramButton" class="action-button secondary"><span>↗</span> Telegram</button><button id="copyButton" class="copy-button" type="button">Mesajı kopyala</button></div>
+        <p class="preview-hint">Her değişiklik kartına anında yansır.</p>
+      </aside>
+    </section>
+    <footer><a class="brand footer-brand" href="#top"><span class="brand-mark">✳</span> mesaj<span class="brand-dot">.</span></a><span>İyilik paylaştıkça çoğalır.</span><span>Kalpten kalbe, bir mesajla.</span></footer>
+  </main>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
 </body>
 </html>
