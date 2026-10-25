@@ -94,9 +94,12 @@
 
   function updateCard() {
     const key = category.value;
-    $('#cardTitle').textContent = key === 'quran' ? 'Kur’an’dan bir ayet' : window.MesajData.titles[key];
+    const customOnly = key === 'custom';
+    $('#cardTitle').textContent = customOnly ? '' : key === 'quran' ? 'Kur’an’dan bir ayet' : window.MesajData.titles[key];
+    $('#cardTitle').classList.toggle('hidden', customOnly);
     $('#cardKicker').textContent = window.MesajData.categories[key] || 'KUR’AN-I KERİM’DEN';
-    $('#cardKicker').classList.toggle('hidden', key === 'quran');
+    $('#cardKicker').classList.toggle('hidden', key === 'quran' || customOnly);
+    $('.card-rule').classList.toggle('hidden', customOnly);
     $('#customBlock').classList.toggle('hidden', key !== 'custom');
     $('#messagePickerBlock').classList.toggle('hidden', key === 'custom');
     $('#arabicToggle').classList.toggle('hidden', !['quran', 'esma'].includes(key));
@@ -106,12 +109,12 @@
     $('.order-block').classList.toggle('hidden', !['quran', 'esma'].includes(key));
     if (key !== 'custom') updateMessage();
     else {
-      $('#cardMessage').textContent = $('#customMessage').value || 'Kalbinden geçen güzel bir söz...';
+      $('#cardMessage').textContent = $('#customMessage').value;
       $('#cardSource').replaceChildren();
       $('#cardArabic').classList.add('hidden');
     }
     const signature = $('#senderName').value.trim();
-    $('#cardSignature').textContent = signature ? `— ${signature}` : '';
+    $('#cardSignature').textContent = !customOnly && signature ? `— ${signature}` : '';
     card.className = `greeting-card font-${$('#fontChoice').value}`;
     applyTextSizes();
     card.dataset.overlay = $('#overlayRange').value;

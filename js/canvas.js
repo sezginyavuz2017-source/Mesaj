@@ -12,11 +12,16 @@
     const hasKicker=!card.querySelector('#cardKicker').classList.contains('hidden');
     if(hasKicker){context.fillStyle='#ead7b5';context.font='22px Arial';context.fillText(card.querySelector('#cardKicker').textContent,width/2,390);}
     const titleScale=Number(card.dataset.titleSize||100)/100;
+    const titleNode=card.querySelector('#cardTitle');
+    const hasTitle=!titleNode.classList.contains('hidden')&&titleNode.textContent.trim();
+    const hasRule=!card.querySelector('.card-rule').classList.contains('hidden');
     const titleY=hasKicker?475:400;
     const ruleY=titleY+130;
-    context.fillStyle='#fffdf2'; context.font=`bold ${62*titleScale}px Georgia`; wrapText(context,card.querySelector('#cardTitle').textContent,width/2,titleY,870,78*titleScale);
-    context.fillStyle='#e6c896'; context.fillRect(width/2-29,ruleY-1,58,2);
-    let textY=ruleY+85;
+    if(hasTitle){
+      context.fillStyle='#fffdf2'; context.font=`bold ${62*titleScale}px Georgia`; wrapText(context,titleNode.textContent,width/2,titleY,870,78*titleScale);
+      if(hasRule){context.fillStyle='#e6c896'; context.fillRect(width/2-29,ruleY-1,58,2);}
+    }
+    let textY=hasTitle?ruleY+(hasRule?85:0):height/2;
     for(const node of card.querySelector('#textStack').children){
       const value=node.textContent.trim();if(!value||node.classList.contains('hidden'))continue;
       const scaleKey=node.id==='cardArabic'||node.id==='cardBasmala'?'arabic':node.id==='cardSource'?'source':node.id==='cardSignature'?'signature':'message';
