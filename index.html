@@ -25,7 +25,6 @@
         .font-display { font-family: 'Playfair Display', serif; }
         .glow-effect { text-shadow: 0 0 20px rgba(255, 215, 0, 0.6), 0 0 40px rgba(255, 215, 0, 0.3); }
         .card-shadow { box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5); }
-        .light-ray { background: linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0) 60%); }
         .card-image {
             position: absolute;
             inset: 0;
@@ -42,10 +41,14 @@
             border: 2px solid transparent;
             transition: transform 0.2s ease, border-color 0.2s ease;
             cursor: pointer;
+            background: #0f172a;
         }
         .mini-thumb:hover, .mini-thumb.active {
             transform: translateY(-2px);
             border-color: rgba(251, 191, 36, 0.9);
+        }
+        .no-effects {
+            background: linear-gradient(180deg, rgba(2,6,23,0.72), rgba(2,6,23,0.58));
         }
     </style>
 </head>
@@ -54,7 +57,7 @@
     <div class="max-w-5xl w-full mx-auto space-y-8">
         <header class="text-center space-y-2">
             <h1 class="text-3xl md:text-4xl font-display font-bold text-amber-400 tracking-wide">Nurî Mesaj ve Kart Tasarımcısı</h1>
-            <p class="text-slate-400 text-sm md:text-base">Arka planda otomatik İslami görsel seçimi, tema bazlı arama ve WhatsApp paylaşım sistemi.</p>
+            <p class="text-slate-400 text-sm md:text-base">Arka plan görseli seçimi, tema bazlı arama ve WhatsApp paylaşım sistemi.</p>
         </header>
 
         <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
@@ -93,11 +96,6 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-amber-300 mb-2">Işık Efekti Yoğunluğu</label>
-                    <input type="range" id="effectRange" min="0" max="100" value="65" oninput="updateEffects()" class="w-full accent-amber-500 cursor-pointer">
-                </div>
-
-                <div>
                     <label class="block text-sm font-medium text-amber-300 mb-2">Gönderen Adı (İmza)</label>
                     <input type="text" id="signatureInput" value="Hayırlı Dualarla" oninput="updateSignature()" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:border-amber-500">
                 </div>
@@ -106,8 +104,7 @@
             <div class="md:col-span-7 flex flex-col space-y-6">
                 <div id="previewCard" class="relative w-full aspect-[4/5] rounded-3xl overflow-hidden card-shadow flex flex-col justify-between p-8 text-white transition-all duration-500">
                     <img id="cardImage" class="card-image" src="https://images.unsplash.com/photo-1564769625405-49e095204fb9?auto=format&fit=crop&w=1200&q=80" alt="İslami mesaj kartı arka plan görseli" aria-hidden="true">
-                    <div id="cardOverlay" class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/75 to-slate-950/40 transition-all duration-500"></div>
-                    <div class="absolute inset-0 light-ray pointer-events-none"></div>
+                    <div id="cardOverlay" class="absolute inset-0 no-effects transition-all duration-500"></div>
 
                     <div class="relative z-10 text-center space-y-1">
                         <span id="displayGreeting" class="inline-block text-amber-400 font-display text-lg md:text-xl tracking-wider font-semibold uppercase glow-effect">Hayırlı Cumalar</span>
@@ -167,13 +164,12 @@
         };
 
         let currentType = 'cuma';
-        const unsplashSeedTopics = [
-            'mosque',
-            'islamic prayer',
-            'ramadan',
-            'islamic pattern',
-            'garden',
-            'nature' 
+        const imageFallbacks = [
+            'https://images.unsplash.com/photo-1564769625405-49e095204fb9?auto=format&fit=crop&w=1200&q=80',
+            'https://images.unsplash.com/photo-1543353071-873f17a7a08c?auto=format&fit=crop&w=1200&q=80',
+            'https://images.unsplash.com/photo-1534620808146-d33bb7a3fd86?auto=format&fit=crop&w=1200&q=80',
+            'https://images.unsplash.com/photo-1517486800575-8e5eacb3e94d?auto=format&fit=crop&w=1200&q=80',
+            'https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=1200&q=80'
         ];
 
         function updateSocialPreviewMeta(imageUrl) {
@@ -196,20 +192,34 @@
             setCardImage(url, 'İslami mesaj kartı arka plan görseli');
         }
 
-        function buildUnsplashUrl(query, count = 6) {
-            const cleanQuery = encodeURIComponent((query || 'mosque').trim() || 'mosque');
-            const seed = Math.random().toString(36).slice(2, 10);
-            return `https://source.unsplash.com/featured/${count}x${count}?${cleanQuery}&sig=${seed}`;
+        function loadWikimediaImages(query) {
+            const cleanQuery = (query || 'mosque').trim();
+            const apiUrl = `https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(cleanQuery)}&gsrnamespace=6&gsrlimit=8&prop=imageinfo&iiprop=url&format=json&origin=*`;
+
+            return fetch(apiUrl)
+                .then(res => res.json())
+                .then(data => {
+                    const pages = data?.query?.pages ? Object.values(data.query.pages) : [];
+                    const urls = pages
+                        .map(page => page.imageinfo && page.imageinfo[0] && page.imageinfo[0].url)
+                        .filter(Boolean);
+
+                    if (urls.length > 0) return urls;
+                    return imageFallbacks;
+                })
+                .catch(() => imageFallbacks);
         }
 
         function renderThumbs(urls, activeUrl) {
             const thumbs = document.getElementById('imageThumbs');
             thumbs.innerHTML = '';
+
             urls.forEach(url => {
                 const img = document.createElement('img');
                 img.src = url;
                 img.alt = 'Seçilebilir arka plan görseli';
                 img.className = 'mini-thumb ' + (url === activeUrl ? 'active' : '');
+                img.loading = 'lazy';
                 img.onclick = () => {
                     setCardBackgroundByUrl(url);
                     document.querySelectorAll('.mini-thumb').forEach(el => el.classList.remove('active'));
@@ -221,17 +231,16 @@
 
         function searchImages() {
             const query = document.getElementById('imageSearchInput').value.trim() || 'mosque';
-            const urls = [];
-            const max = 6;
-            for (let i = 0; i < max; i++) {
-                urls.push(buildUnsplashUrl(query, 1200));
-            }
-            renderThumbs(urls, urls[0]);
-            setCardBackgroundByUrl(urls[0]);
+            loadWikimediaImages(query).then(urls => {
+                const chosen = urls[0] || imageFallbacks[0];
+                renderThumbs(urls, chosen);
+                setCardBackgroundByUrl(chosen);
+            });
         }
 
         function seedRandomThemeImages() {
-            const picked = unsplashSeedTopics[Math.floor(Math.random() * unsplashSeedTopics.length)];
+            const themes = ['mosque', 'prayer', 'ramadan', 'islamic pattern', 'garden', 'nature'];
+            const picked = themes[Math.floor(Math.random() * themes.length)];
             document.getElementById('imageSearchInput').value = picked;
             searchImages();
         }
@@ -298,13 +307,6 @@
             document.getElementById('displaySignature').textContent = val;
         }
 
-        function updateEffects() {
-            const val = document.getElementById('effectRange').value;
-            const overlay = document.getElementById('cardOverlay');
-            const opacity = val / 100;
-            overlay.style.backgroundColor = `rgba(2, 6, 23, ${0.3 + (opacity * 0.5)})`;
-        }
-
         function copyCardText() {
             const greeting = document.getElementById('displayGreeting').textContent;
             const text = document.getElementById('displayText').textContent;
@@ -313,6 +315,8 @@
             const fullText = `${greeting}\n\n${text}\n${source}\n\n-- ${sig}`;
             navigator.clipboard.writeText(fullText).then(() => {
                 alert('Mesaj metni ve kaynağı başarıyla kopyalandı!');
+            }).catch(() => {
+                alert('Tarayıcı izni gerekiyor.');
             });
         }
 
