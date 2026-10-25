@@ -331,6 +331,11 @@
   });
 
   $('#showArabic').addEventListener('change', updateMessage);
+  $('#closeSizePreview').addEventListener('click', () => {
+    const sizePanel = $('.text-size-panel');
+    sizePanel.open = false;
+    sizePanel.querySelector('summary').focus();
+  });
   $('#textOrder').addEventListener('change', applyTextOrder);
   document.querySelectorAll('.suggestions [data-query]').forEach(button => button.addEventListener('click', () => {
     $('#imageSearch').value = button.dataset.query;
