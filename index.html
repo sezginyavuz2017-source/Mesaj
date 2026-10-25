@@ -50,6 +50,21 @@
         .no-effects {
             background: linear-gradient(180deg, rgba(2,6,23,0.72), rgba(2,6,23,0.58));
         }
+        .search-suggestion {
+            border: 1px solid rgba(148,163,184,0.4);
+            background: rgba(15,23,42,0.7);
+            color: #cbd5e1;
+            font-size: 11px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .search-suggestion:hover {
+            border-color: rgba(251,191,36,0.9);
+            background: rgba(30,41,59,0.9);
+            color: #f8fafc;
+        }
     </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col items-center justify-start p-4 md:p-8">
@@ -85,10 +100,22 @@
                 <div>
                     <label class="block text-sm font-medium text-amber-300 mb-2">Arka Plan Görseli</label>
                     <div class="flex gap-2">
-                        <input id="imageSearchInput" type="text" value="mosque" placeholder="ör: mosque, prayer, ramadan, garden" class="flex-1 bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:border-amber-500">
-                        <button onclick="searchImages()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold px-4 py-3 rounded-xl text-sm transition">Ara</button>
+                        <input id="imageSearchInput" type="text" value="mosque" placeholder="mosque, ramadan, islamic calligraphy..." class="flex-1 bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:border-amber-500">
+                        <button onclick="searchImages()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold px-4 py-3 rounded-xl text-sm transition">Search</button>
                     </div>
-                    <div class="flex gap-2 mt-2">
+
+                    <div class="mt-3 mb-2">
+                        <label class="block text-xs font-medium text-slate-400 mb-2">Similar search source</label>
+                        <select id="searchSourceSelect" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-sm text-slate-200 focus:outline-none focus:border-amber-500">
+                            <option value="wikimedia">Wikimedia</option>
+                            <option value="unsplash">Unsplash</option>
+                            <option value="all">Mix</option>
+                        </select>
+                    </div>
+
+                    <div class="mt-3 flex flex-wrap gap-2" id="searchSuggestions"></div>
+
+                    <div class="flex gap-2 mt-3">
                         <button type="button" onclick="document.getElementById('imageUpload').click()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium py-2.5 px-3 rounded-xl text-sm transition border border-slate-700">
                             📷 Telefon Görseli Yükle
                         </button>
@@ -126,8 +153,7 @@
                         </p>
                     </div>
 
-                    <div class="relative z-10 flex justify-between items-end pt-4 border-t border-white/10">
-                        <div class="text-[11px] text-slate-400 tracking-wider">MESAJ</div>
+                    <div class="relative z-10 flex justify-end items-end pt-4 border-t border-white/10">
                         <div id="displaySignature" class="text-sm font-semibold text-amber-300 italic">Sezgin Yavuz</div>
                     </div>
                 </div>
@@ -178,6 +204,76 @@
             'https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=1200&q=80'
         ];
 
+        const searchSuggestions = [
+            { label: 'Mosque', value: 'mosque' },
+            { label: 'Ramadan', value: 'ramadan' },
+            { label: 'Prayer', value: 'prayer' },
+            { label: 'Islamic calligraphy', value: 'islamic calligraphy' },
+            { label: 'Cami', value: 'cami' },
+            { label: 'Namaz', value: 'namaz' },
+            { label: 'Kur'an', value: 'quran' },
+            { label: 'Ramazan', value: 'ramazan' }
+        ];
+
+        const unsplashCatalog = {
+            mosque: [
+                'https://images.unsplash.com/photo-1564769625405-49e095204fb9?auto=format&fit=crop&w=800&q=80',
+                'https://images.unsplash.com/photo-1543353071-873f17a7a08c?auto=format&fit=crop&w=800&q=80',
+                'https://images.unsplash.com/photo-1517486800575-8e5eacb3e94d?auto=format&fit=crop&w=800&q=80'
+            ],
+            ramadan: [
+                'https://images.unsplash.com/photo-1517486800575-8e5eacb3e94d?auto=format&fit=crop&w=800&q=80',
+                'https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=800&q=80',
+                'https://images.unsplash.com/photo-1534620808146-d33bb7a3fd86?auto=format&fit=crop&w=800&q=80'
+            ],
+            prayer: [
+                'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&w=800&q=80',
+                'https://images.unsplash.com/photo-1507692049790-de58290a4334?auto=format&fit=crop&w=800&q=80',
+                'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=800&q=80'
+            ],
+            'islamic calligraphy': [
+                'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=800&q=80',
+                'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=800&q=80',
+                'https://images.unsplash.com/photo-1516321497487-e288fb19713f?auto=format&fit=crop&w=800&q=80'
+            ],
+            quran: [
+                'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=800&q=80',
+                'https://images.unsplash.com/photo-1507680434567-5739c752279c?auto=format&fit=crop&w=800&q=80',
+                'https://images.unsplash.com/photo-1515343480029-43cdfe6b6aae?auto=format&fit=crop&w=800&q=80'
+            ],
+            cami: [
+                'https://images.unsplash.com/photo-1543353071-873f17a7a08c?auto=format&fit=crop&w=800&q=80',
+                'https://images.unsplash.com/photo-1564769625405-49e095204fb9?auto=format&fit=crop&w=800&q=80',
+                'https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=800&q=80'
+            ],
+            namaz: [
+                'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&w=800&q=80',
+                'https://images.unsplash.com/photo-1507692049790-de58290a4334?auto=format&fit=crop&w=800&q=80',
+                'https://images.unsplash.com/photo-1543353071-873f17a7a08c?auto=format&fit=crop&w=800&q=80'
+            ],
+            ramazan: [
+                'https://images.unsplash.com/photo-1517486800575-8e5eacb3e94d?auto=format&fit=crop&w=800&q=80',
+                'https://images.unsplash.com/photo-1534620808146-d33bb7a3fd86?auto=format&fit=crop&w=800&q=80',
+                'https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=800&q=80'
+            ]
+        };
+
+        function buildSearchSuggestions() {
+            const container = document.getElementById('searchSuggestions');
+            container.innerHTML = '';
+            searchSuggestions.forEach(s => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'search-suggestion';
+                btn.textContent = s.label;
+                btn.onclick = () => {
+                    document.getElementById('imageSearchInput').value = s.value;
+                    searchImages();
+                };
+                container.appendChild(btn);
+            });
+        }
+
         const uploadInput = document.getElementById('imageUpload');
         if (uploadInput) {
             uploadInput.addEventListener('change', function (event) {
@@ -188,7 +284,7 @@
                 reader.onload = function (e) {
                     const uploaded = e.target.result;
                     const mixed = [uploaded, ...imageFallbacks].slice(0, 8);
-                    renderThumbs(mixed, uploaded);
+                    renderThumbs(mixed.map(url => ({ preview: url, full: url })), uploaded);
                     setCardBackgroundByUrl(uploaded);
                 };
                 reader.readAsDataURL(file);
@@ -215,35 +311,65 @@
             setCardImage(url, 'İslami mesaj kartı arka plan görseli');
         }
 
+        function buildUnsplashResults(query) {
+            const cleaned = (query || 'mosque').toLowerCase().trim();
+            const keys = Object.keys(unsplashCatalog);
+            const matched = keys.find(key => cleaned.includes(key) || key.includes(cleaned));
+            const source = matched ? unsplashCatalog[matched] : unsplashCatalog.mosque;
+            return source.map(url => ({ preview: url, full: url.replace('w=800', 'w=1600').replace('w=800', 'w=1600') }));
+        }
+
         function loadWikimediaImages(query) {
             const cleanQuery = (query || 'mosque').trim();
-            const apiUrl = `https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(cleanQuery)}&gsrnamespace=6&gsrlimit=8&prop=imageinfo&iiprop=url&format=json&origin=*`;
+            const apiUrl = `https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(cleanQuery)}&gsrnamespace=6&gsrlimit=8&prop=imageinfo&iiprop=url|size&iiurlwidth=400&iiurlheight=400&format=json&origin=*`;
 
             return fetch(apiUrl)
                 .then(res => res.json())
                 .then(data => {
                     const pages = data?.query?.pages ? Object.values(data.query.pages) : [];
-                    const urls = pages
-                        .map(page => page.imageinfo && page.imageinfo[0] && page.imageinfo[0].url)
+                    const images = pages
+                        .map(page => {
+                            const info = page.imageinfo && page.imageinfo[0];
+                            if (!info) return null;
+                            return {
+                                preview: info.thumburl || info.url,
+                                full: info.url || info.thumburl
+                            };
+                        })
                         .filter(Boolean);
 
-                    if (urls.length > 0) return urls;
-                    return imageFallbacks;
+                    if (images.length > 0) return images;
+                    return imageFallbacks.map(url => ({ preview: url, full: url }));
                 })
-                .catch(() => imageFallbacks);
+                .catch(() => imageFallbacks.map(url => ({ preview: url, full: url })));
         }
 
-        function renderThumbs(urls, activeUrl) {
+        function fetchSearchResults(query) {
+            const source = document.getElementById('searchSourceSelect')?.value || 'wikimedia';
+            if (source === 'unsplash') {
+                return Promise.resolve(buildUnsplashResults(query));
+            }
+            if (source === 'all') {
+                return Promise.all([
+                    loadWikimediaImages(query),
+                    Promise.resolve(buildUnsplashResults(query))
+                ]).then(([wiki, unsplash]) => [...wiki, ...unsplash].slice(0, 10));
+            }
+            return loadWikimediaImages(query);
+        }
+
+        function renderThumbs(results, activeUrl) {
             const thumbs = document.getElementById('imageThumbs');
             thumbs.innerHTML = '';
 
-            urls.forEach(url => {
+            results.forEach(item => {
                 const img = document.createElement('img');
-                img.src = url;
+                img.src = item.preview || item.full || item;
                 img.alt = 'Seçilebilir arka plan görseli';
-                img.className = 'mini-thumb ' + (url === activeUrl ? 'active' : '');
+                img.className = 'mini-thumb ' + ((item.full || item.preview || item) === activeUrl ? 'active' : '');
                 img.loading = 'lazy';
                 img.onclick = () => {
+                    const url = item.full || item.preview || item;
                     setCardBackgroundByUrl(url);
                     document.querySelectorAll('.mini-thumb').forEach(el => el.classList.remove('active'));
                     img.classList.add('active');
@@ -254,21 +380,23 @@
 
         function searchImages() {
             const query = document.getElementById('imageSearchInput').value.trim() || 'mosque';
-            loadWikimediaImages(query).then(urls => {
-                const chosen = urls[0] || imageFallbacks[0];
-                renderThumbs(urls, chosen);
-                setCardBackgroundByUrl(chosen);
+            fetchSearchResults(query).then(results => {
+                const chosen = results[0];
+                const chosenFull = chosen && (chosen.full || chosen.preview || chosen);
+                renderThumbs(results, chosenFull);
+                if (chosenFull) setCardBackgroundByUrl(chosenFull);
             });
         }
 
         function seedRandomThemeImages() {
-            const themes = ['mosque', 'prayer', 'ramadan', 'islamic pattern', 'garden', 'nature'];
+            const themes = ['mosque', 'prayer', 'ramadan', 'islamic calligraphy', 'garden', 'cami'];
             const picked = themes[Math.floor(Math.random() * themes.length)];
             document.getElementById('imageSearchInput').value = picked;
             searchImages();
         }
 
         window.onload = function() {
+            buildSearchSuggestions();
             updateContentOptions();
             seedRandomThemeImages();
         };
