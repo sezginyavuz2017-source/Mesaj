@@ -120,7 +120,7 @@
       $('#cardArabic').classList.add('hidden');
     }
     const signature = $('#senderName').value.trim();
-    $('#cardSignature').textContent = !customOnly && signature ? `— ${signature}` : '';
+    $('#cardSignature').textContent = signature ? `— ${signature}` : '';
     card.className = `greeting-card font-${$('#fontChoice').value}`;
     applyTextSizes();
     card.dataset.overlay = $('#overlayRange').value;

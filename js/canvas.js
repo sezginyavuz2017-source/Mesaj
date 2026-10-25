@@ -23,6 +23,7 @@
     }
     let textY=hasTitle?ruleY+(hasRule?85:0):height/2;
     for(const node of card.querySelector('#textStack').children){
+      if(node.id==='cardSignature')continue;
       const value=node.textContent.trim();if(!value||node.classList.contains('hidden'))continue;
       const scaleKey=node.id==='cardArabic'||node.id==='cardBasmala'?'arabic':node.id==='cardSource'?'source':node.id==='cardSignature'?'signature':'message';
       const scale=Number(card.dataset[`${scaleKey}Size`]||100)/100;
@@ -37,6 +38,15 @@
       if(node.id==='cardSource'||node.id==='cardSignature')context.fillText(value,width/2,textY);
       else wrapText(context,value,width/2,textY,maxWidth,lineHeight);
       textY+=lines*lineHeight+18;
+    }
+    const signatureNode=card.querySelector('#cardSignature');
+    const signature=signatureNode.textContent.trim();
+    if(signature&&!signatureNode.classList.contains('hidden')){
+      const signatureScale=Number(card.dataset.signatureSize||100)/100;
+      context.font=`italic ${40*signatureScale}px Georgia`;
+      context.fillStyle='#fffdf2';
+      context.globalAlpha=1;
+      context.fillText(signature,width/2,height-118,850);
     }
     context.globalAlpha=1;context.direction='ltr';
     return canvas;
