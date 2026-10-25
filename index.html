@@ -10,10 +10,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
-  <script src="js/fetcher.js?v=82db85b" defer></script>
+  <script src="js/fetcher.js?v=photo-search-4" defer></script>
   <script src="js/canvas.js" defer></script>
   <script src="js/share.js" defer></script>
-  <script src="js/app.js?v=82db85b" defer></script>
+  <script src="js/app.js?v=photo-search-4" defer></script>
 </head>
 <body>
   <header class="topbar">
@@ -58,9 +58,10 @@
 
         <div class="panel-heading compact"><div><span class="step">02</span><h2>Görselini seç</h2></div></div>
         <div class="search-row"><label class="sr-only" for="imageSearch">Görsel ara</label><input id="imageSearch" type="search" value="mosque" placeholder="Örn. cami, gün batımı..."><button id="searchButton" class="icon-button" type="button" aria-label="Görsel ara">⌕</button></div>
-        <div class="search-options"><span>Kaynak</span><select id="imageSource" aria-label="Görsel kaynağı"><option value="commons">Wikimedia Commons</option><option value="unsplash">Unsplash koleksiyonu</option></select><span class="free-label">ÜCRETSİZ</span></div>
+        <div class="search-options"><span>Kaynak: Wikimedia Commons</span><span class="free-label">ÜCRETSİZ</span></div>
         <div class="suggestions" aria-label="Görsel önerileri"><button type="button" data-query="mosque">Cami · Mosque</button><button type="button" data-query="lantern">Fener · Lantern</button><button type="button" data-query="sunset">Gün batımı · Sunset</button><button type="button" data-query="nature">Doğa · Nature</button></div>
         <div id="imageGrid" class="image-grid" aria-live="polite"></div>
+        <button id="moreImages" class="quiet-button hidden" type="button">↻ Daha fazla görsel yükle</button>
         <label class="upload-button" for="imageUpload"><span aria-hidden="true">＋</span> Kendi fotoğrafını yükle<input id="imageUpload" type="file" accept="image/png,image/jpeg,image/webp"></label>
 
         <div class="divider"></div>

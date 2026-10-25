@@ -11,6 +11,8 @@
   let quranEntry = null;
   let selectedImage = null;
   let loadToken = 0;
+  let imageLoadToken = 0;
+  let activeImageQuery = 'mosque';
   let isLoading = false;
 
   const toast = text => {
@@ -169,11 +171,13 @@
       imageGrid.innerHTML = '<span class="image-state">Bu aramada görsel bulunamadı.</span>';
       return;
     }
-    images.slice(0, 6).forEach((image, index) => {
+    images.forEach((image, index) => {
       const button = document.createElement('button');
       button.className = 'image-choice';
       button.type = 'button';
-      button.setAttribute('aria-label', image.title || `Görsel ${index + 1}`);
+      const details = [image.title, image.credit, image.license].filter(Boolean).join(' · ');
+      button.setAttribute('aria-label', details || `Görsel ${index + 1}`);
+      button.title = details;
       const img = document.createElement('img');
       img.src = image.url;
       img.alt = '';
@@ -191,20 +195,35 @@
     });
   }
 
-  async function searchImages() {
+  async function searchImages({ more = false } = {}) {
     const query = $('#imageSearch').value.trim() || 'mosque';
-    imageGrid.innerHTML = '<span class="image-state">Görseller aranıyor…</span>';
+    if (!more || query !== activeImageQuery) {
+      more = false;
+      activeImageQuery = query;
+    }
+    const token = ++imageLoadToken;
+    if (!more) {
+      imageGrid.innerHTML = '<span class="image-state">Görseller aranıyor…</span>';
+      $('#moreImages').classList.add('hidden');
+    }
     $('#searchButton').disabled = true;
+    $('#moreImages').disabled = true;
+    if (more) $('#moreImages').textContent = 'Yeni görseller aranıyor…';
     try {
-      const images = $('#imageSource').value === 'commons'
-        ? await window.MesajData.searchCommons(query)
-        : await window.MesajData.searchUnsplash(query);
+      const images = await window.MesajData.searchCommons(query, { more });
+      if (token !== imageLoadToken) return;
       renderImages(images);
+      $('#moreImages').classList.toggle('hidden', !images.length);
     } catch (error) {
-      imageGrid.innerHTML = '<span class="image-state">Görseller yüklenemedi. Yeniden deneyebilirsin.</span>';
+      if (token !== imageLoadToken) return;
+      if (!more) imageGrid.innerHTML = '<span class="image-state">Görseller yüklenemedi. Yeniden deneyebilirsin.</span>';
       toast(error.message);
     } finally {
-      $('#searchButton').disabled = false;
+      if (token === imageLoadToken) {
+        $('#searchButton').disabled = false;
+        $('#moreImages').disabled = false;
+        $('#moreImages').textContent = '↻ Daha fazla görsel yükle';
+      }
     }
   }
 
@@ -253,8 +272,8 @@
   $('#fontChoice').addEventListener('change', updateCard);
   $('#overlayRange').addEventListener('input', updateCard);
   $('#searchButton').addEventListener('click', searchImages);
+  $('#moreImages').addEventListener('click', () => searchImages({ more: true }));
   $('#imageSearch').addEventListener('keydown', event => { if (event.key === 'Enter') searchImages(); });
-  $('#imageSource').addEventListener('change', searchImages);
   $('#imageUpload').addEventListener('change', event => {
     const file = event.target.files[0];
     if (!file) return;

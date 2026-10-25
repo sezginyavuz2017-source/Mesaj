@@ -34,19 +34,61 @@
   };
   const titles = { cuma: 'Hayırlı Cumalar', bayram: 'İyi Bayramlar', kandil: 'Kandiliniz Mübarek Olsun', dua: 'Gönülden Bir Dua', hadith:'Güzel Bir Hadis', custom: 'Sana özel bir mesaj' };
   const categories = { cuma: 'GÜZEL BİR CUMA DİLEĞİ', bayram: 'BAYRAM SEVİNCİ', kandil: 'MÜBAREK BİR GECE', dua: 'GÖNÜLDEN BİR DUA', hadith:'PEYGAMBERİMİZDEN BİR ÖĞÜT', custom: 'SANA ÖZEL' };
-  const searchTerms = { mosque: 'mosque', cami: 'mosque', lantern:'lantern', fener:'lantern', 'gün batımı':'sunset over mosque', sunset:'sunset mosque', günbatımı: 'sunset mosque', kandil: 'lantern mosque', nature:'nature landscape', doğa: 'nature landscape', ramazan: 'ramadan lantern' };
-  async function searchCommons(query) {
-    const term = searchTerms[query.toLocaleLowerCase('tr')] || query;
-    const params = new URLSearchParams({ action:'query', generator:'search', gsrsearch:`filetype:bitmap ${term}`, gsrnamespace:'6', gsrlimit:'6', prop:'imageinfo', iiprop:'url|extmetadata', iiurlwidth:'520', format:'json', origin:'*' });
-    const response = await fetch(`https://commons.wikimedia.org/w/api.php?${params}`);
-    if (!response.ok) throw new Error('Görseller alınamadı.');
-    const result = await response.json();
-    return Object.values(result.query?.pages || {}).map(page => ({ title:page.title.replace('File:',''), url:page.imageinfo?.[0]?.thumburl || page.imageinfo?.[0]?.url, full:page.imageinfo?.[0]?.url, credit:page.imageinfo?.[0]?.extmetadata?.Artist?.value || '' })).filter(image => image.url);
+  const imageSearchVariants = {
+    mosque: ['mosque', 'Ottoman mosque', 'Sultan Ahmet Mosque', 'mosque minaret', 'Islamic architecture'],
+    cami: ['mosque', 'Ottoman mosque', 'Sultan Ahmet Mosque', 'mosque minaret', 'Islamic architecture'],
+    lantern: ['Ramadan lantern', 'fanous lantern', 'hanging lantern', 'Islamic lantern', 'Ramadan decorations'],
+    fener: ['Ramadan lantern', 'fanous lantern', 'hanging lantern', 'Islamic lantern', 'Ramadan decorations'],
+    sunset: ['mosque sunset', 'sunset minaret', 'Istanbul mosque sunset', 'sunset over mosque', 'evening mosque'],
+    'gün batımı': ['mosque sunset', 'sunset minaret', 'Istanbul mosque sunset', 'sunset over mosque', 'evening mosque'],
+    günbatımı: ['mosque sunset', 'sunset minaret', 'Istanbul mosque sunset', 'sunset over mosque', 'evening mosque'],
+    kandil: ['Ramadan lantern', 'mosque at night', 'Islamic architecture night', 'minaret night sky', 'Ramadan decorations'],
+    nature: ['nature landscape', 'mountain landscape', 'forest sunlight', 'calm sea landscape', 'flower field'],
+    doğa: ['nature landscape', 'mountain landscape', 'forest sunlight', 'calm sea landscape', 'flower field'],
+    ramazan: ['Ramadan lantern', 'Ramadan decorations', 'mosque at night', 'fanous lantern', 'Ramadan mosque']
+  };
+  const imageSearchState = new Map();
+  function metadataText(value = '') {
+    return new DOMParser().parseFromString(value, 'text/html').body.textContent.trim();
   }
-  async function searchUnsplash(query) {
-    const terms = { mosque:'photo-1564769625905-50e93615e769', cami:'photo-1564769625905-50e93615e769', lantern:'photo-1519817650390-64a93db51149', fener:'photo-1519817650390-64a93db51149', ramadan:'photo-1519817650390-64a93db51149', kandil:'photo-1519817650390-64a93db51149', sunset:'photo-1500530855697-b586d89ba3ee', 'gün batımı':'photo-1500530855697-b586d89ba3ee', nature:'photo-1470770841072-f978cf4d019e', doğa:'photo-1470770841072-f978cf4d019e' };
-    const id = terms[query.toLocaleLowerCase('tr')] || terms.mosque;
-    return [0,1,2,3,4,5].map((n) => ({ title:`Unsplash · ${query}`, url:`https://images.unsplash.com/${id}?auto=format&fit=crop&w=520&h=720&q=75&sat=-8&sig=${n}`, full:`https://images.unsplash.com/${id}?auto=format&fit=crop&w=1400&h=1900&q=90&sat=-8&sig=${n}`, credit:'Unsplash' }));
+  async function searchCommons(query, { more = false } = {}) {
+    const key = query.trim().toLocaleLowerCase('tr') || 'mosque';
+    const variants = imageSearchVariants[key] || [query.trim(), `${query.trim()} landscape`, `${query.trim()} architecture`].filter(Boolean);
+    let state = imageSearchState.get(key);
+    if (!more || !state) {
+      state = { offset: Math.floor(Math.random() * 4) * 18, variantStart: Math.floor(Math.random() * variants.length), used: new Set() };
+      imageSearchState.set(key, state);
+    }
+
+    const found = [];
+    for (let attempt = 0; attempt < variants.length && found.length < 6; attempt++) {
+      const variant = variants[(state.variantStart + attempt + (more ? 1 : 0)) % variants.length];
+      const params = new URLSearchParams({ action:'query', generator:'search', gsrsearch:`filetype:bitmap ${variant}`, gsrnamespace:'6', gsrlimit:'18', gsroffset:String(state.offset + attempt * 18), prop:'imageinfo', iiprop:'url|extmetadata', iiurlwidth:'520', format:'json', origin:'*' });
+      const response = await fetch(`https://commons.wikimedia.org/w/api.php?${params}`);
+      if (!response.ok) throw new Error('Görseller alınamadı.');
+      const result = await response.json();
+      const images = Object.values(result.query?.pages || {}).map(page => {
+        const info = page.imageinfo?.[0];
+        return info && {
+          title:page.title.replace('File:',''),
+          url:info.thumburl || info.url,
+          full:info.url,
+          credit:metadataText(info.extmetadata?.Artist?.value || ''),
+          license:metadataText(info.extmetadata?.LicenseShortName?.value || ''),
+          sourceUrl:`https://commons.wikimedia.org/wiki/${encodeURIComponent(page.title.replaceAll(' ', '_'))}`
+        };
+      }).filter(image => image?.url && !state.used.has(image.title));
+      images.forEach(image => {
+        if (found.length < 6) {
+          state.used.add(image.title);
+          found.push(image);
+        }
+      });
+    }
+    state.offset += 18;
+    state.variantStart = (state.variantStart + 1) % variants.length;
+    if (!found.length) throw new Error('Bu aramada yeni görsel bulunamadı. Başka bir arama deneyebilirsin.');
+    return found;
   }
   let turkishEdition;
   async function getQuranMessage() {
@@ -115,5 +157,5 @@
     hadithContent = null;
     return getHadithContent();
   }
-  window.MesajData = { messages, titles, categories, searchCommons, searchUnsplash, getQuranMessage, getOnlineMessages, refreshHadithMessages };
+  window.MesajData = { messages, titles, categories, searchCommons, getQuranMessage, getOnlineMessages, refreshHadithMessages };
 })();
