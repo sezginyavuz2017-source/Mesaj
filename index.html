@@ -10,10 +10,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
-  <script src="js/fetcher.js?v=esma-2" defer></script>
+  <script src="js/fetcher.js?v=text-size-1" defer></script>
   <script src="js/canvas.js" defer></script>
   <script src="js/share.js" defer></script>
-  <script src="js/app.js?v=esma-2" defer></script>
+  <script src="js/app.js?v=text-size-1" defer></script>
 </head>
 <body>
   <header class="topbar">
@@ -74,6 +74,16 @@
         <div class="panel-heading compact"><div><span class="step">03</span><h2>Son dokunuşlar</h2></div></div>
         <div class="field-block"><label class="field-label" for="senderName">İMZA</label><input class="text-control" id="senderName" type="text" maxlength="32" placeholder="Adını yaz"></div>
         <div class="field-block"><label class="field-label" for="fontChoice">YAZI KARAKTERİ</label><select class="select-control" id="fontChoice"><option value="serif">Zarif</option><option value="sans">Sade</option><option value="script">El yazısı</option></select></div>
+        <details class="text-size-panel">
+          <summary>Metin boyutlarını ayarla</summary>
+          <div class="text-size-controls">
+            <div class="field-block range-block"><div class="range-heading"><label class="field-label" for="titleSize">Kart başlığı</label><output id="titleSizeValue" for="titleSize">100%</output></div><input class="text-size-slider" id="titleSize" type="range" min="75" max="130" step="5" value="100"></div>
+            <div class="field-block range-block"><div class="range-heading"><label class="field-label" for="messageSize">Mesaj</label><output id="messageSizeValue" for="messageSize">100%</output></div><input class="text-size-slider" id="messageSize" type="range" min="75" max="130" step="5" value="100"></div>
+            <div class="field-block range-block"><div class="range-heading"><label class="field-label" for="arabicSize">Arapça</label><output id="arabicSizeValue" for="arabicSize">100%</output></div><input class="text-size-slider" id="arabicSize" type="range" min="75" max="130" step="5" value="100"></div>
+            <div class="field-block range-block"><div class="range-heading"><label class="field-label" for="sourceSize">Kaynak</label><output id="sourceSizeValue" for="sourceSize">100%</output></div><input class="text-size-slider" id="sourceSize" type="range" min="75" max="130" step="5" value="100"></div>
+            <div class="field-block range-block"><div class="range-heading"><label class="field-label" for="signatureSize">İmza</label><output id="signatureSizeValue" for="signatureSize">100%</output></div><input class="text-size-slider" id="signatureSize" type="range" min="75" max="130" step="5" value="100"></div>
+          </div>
+        </details>
         <div class="field-block range-block"><div class="range-heading"><label class="field-label" for="overlayRange">GÖRSEL TONU</label><span id="rangeValue">%38</span></div><input id="overlayRange" type="range" min="10" max="75" value="38"></div>
       </div>
 

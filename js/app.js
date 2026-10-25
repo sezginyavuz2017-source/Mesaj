@@ -43,6 +43,17 @@
     try { localStorage.setItem(textHistoryKey, JSON.stringify(textHistory)); } catch {}
   }
 
+  function applyTextSizes() {
+    const sizes = { title: 'titleSize', message: 'messageSize', arabic: 'arabicSize', source: 'sourceSize', signature: 'signatureSize' };
+    Object.entries(sizes).forEach(([key, id]) => {
+      const value = Number($(`#${id}`).value);
+      card.style.setProperty(`--card-${key}-scale`, String(value / 100));
+      card.dataset[`${key}Size`] = String(value);
+      $(`#${id}Value`).value = `${value}%`;
+      $(`#${id}Value`).textContent = `${value}%`;
+    });
+  }
+
   const toast = text => {
     const node = $('#toast');
     node.textContent = text;
@@ -99,6 +110,7 @@
     const signature = $('#senderName').value.trim();
     $('#cardSignature').textContent = signature ? `— ${signature}` : '';
     card.className = `greeting-card font-${$('#fontChoice').value}`;
+    applyTextSizes();
     card.dataset.overlay = $('#overlayRange').value;
     $('#cardShade').style.background = `linear-gradient(180deg,rgba(11,30,23,${Number($('#overlayRange').value) / 250}),rgba(10,28,22,${Math.min(.94, Number($('#overlayRange').value) / 100 + .32)}))`;
     $('#rangeValue').textContent = `%${$('#overlayRange').value}`;
@@ -330,6 +342,9 @@
   $('#senderName').addEventListener('input', updateCard);
   $('#fontChoice').addEventListener('change', updateCard);
   $('#overlayRange').addEventListener('input', updateCard);
+  ['titleSize', 'messageSize', 'arabicSize', 'sourceSize', 'signatureSize'].forEach(id => {
+    $(`#${id}`).addEventListener('input', applyTextSizes);
+  });
   $('#searchButton').addEventListener('click', searchImages);
   $('#moreImages').addEventListener('click', () => searchImages({ more: true }));
   $('#imageSearch').addEventListener('keydown', event => { if (event.key === 'Enter') searchImages(); });
