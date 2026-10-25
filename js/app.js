@@ -386,8 +386,16 @@
       toast('İndirme hazırlanamadı.');
     }
   });
-  $('#whatsappButton').addEventListener('click', () => window.MesajShare.directShare('whatsapp'));
-  $('#telegramButton').addEventListener('click', () => window.MesajShare.directShare('telegram'));
+  async function shareTo(platform) {
+    try {
+      const result = await window.MesajShare.directShare(platform, card);
+      if (result === 'downloaded') toast('Kart indirildi. Açılan sohbette Fotoğraf/Ekle simgesinden kartı ekleyebilirsin.');
+    } catch {
+      toast('Kart görseli hazırlanamadı. Önce kartı indirip sohbete ekleyebilirsin.');
+    }
+  }
+  $('#whatsappButton').addEventListener('click', () => shareTo('whatsapp'));
+  $('#telegramButton').addEventListener('click', () => shareTo('telegram'));
   $('#copyButton').addEventListener('click', async () => {
     try {
       await window.MesajShare.copyMessage();
