@@ -77,6 +77,7 @@
     const arabic = $('#cardArabic');
     arabic.textContent = selectedItem?.arabic || '';
     arabic.classList.toggle('hidden', !(['quran', 'esma'].includes(category.value) && $('#showArabic').checked && selectedItem?.arabic));
+    $('#cardBasmala').classList.toggle('hidden', category.value !== 'quran');
   }
 
   function updateCard() {
@@ -86,6 +87,7 @@
     $('#customBlock').classList.toggle('hidden', key !== 'custom');
     $('#messagePickerBlock').classList.toggle('hidden', key === 'custom');
     $('#arabicToggle').classList.toggle('hidden', !['quran', 'esma'].includes(key));
+    $('#cardBasmala').classList.toggle('hidden', key !== 'quran');
     $('#quranTopicBlock').classList.toggle('hidden', key !== 'quran');
     $('.order-block').classList.toggle('hidden', !['quran', 'esma'].includes(key));
     if (key !== 'custom') updateMessage();

@@ -17,6 +17,7 @@
       const value=node.textContent.trim();if(!value||node.classList.contains('hidden'))continue;
       let font='38px Georgia',color='#fffdf2',lineHeight=62,maxWidth=820,direction='ltr';
       if(node.id==='cardArabic'){font='44px Amiri, serif';color='#f2dfbd';lineHeight=72;maxWidth=850;direction='rtl';}
+      if(node.id==='cardBasmala'){font='38px Amiri, serif';color='#f2dfbd';lineHeight=64;maxWidth=900;direction='rtl';}
       if(node.id==='cardSource'){font='22px Arial';color='#fffdf2';lineHeight=34;maxWidth=850;}
       if(node.id==='cardSignature'){font='italic 40px Georgia';lineHeight=56;maxWidth=850;}
       context.font=font;context.fillStyle=color;context.direction=direction;context.globalAlpha=node.id==='cardSource'?.85:1;
@@ -25,7 +26,7 @@
       else wrapText(context,value,width/2,textY,maxWidth,lineHeight);
       textY+=lines*lineHeight+18;
     }
-    context.globalAlpha=1;context.direction='ltr';context.fillStyle='#ead7b5';context.font='17px Arial';context.fillText('SEVGİYLE HAZIRLANDI',width/2,1380);
+    context.globalAlpha=1;context.direction='ltr';
     return canvas;
   }
   function wrapText(ctx,text,x,y,maxWidth,lineHeight){const words=text.trim().split(/\s+/);let line='',lines=[];for(const word of words){const next=line?`${line} ${word}`:word;if(ctx.measureText(next).width>maxWidth&&line){lines.push(line);line=word;}else line=next;}if(line)lines.push(line);const start=y-(lines.length-1)*lineHeight/2;lines.forEach((item,index)=>ctx.fillText(item,x,start+index*lineHeight));}
