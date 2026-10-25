@@ -15,7 +15,7 @@
     const titleY=hasKicker?475:400;
     const ruleY=titleY+130;
     context.fillStyle='#fffdf2'; context.font=`bold ${62*titleScale}px Georgia`; wrapText(context,card.querySelector('#cardTitle').textContent,width/2,titleY,870,78*titleScale);
-    context.fillStyle='#e6c896'; context.font='22px Georgia'; context.fillText('—  ✦  —',width/2,ruleY);
+    context.fillStyle='#e6c896'; context.fillRect(width/2-29,ruleY-1,58,2);
     let textY=ruleY+85;
     for(const node of card.querySelector('#textStack').children){
       const value=node.textContent.trim();if(!value||node.classList.contains('hidden'))continue;
