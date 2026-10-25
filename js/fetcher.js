@@ -91,7 +91,7 @@
     return found;
   }
   let turkishEdition;
-  async function getQuranMessage() {
+  async function getQuranMessage(seenTexts = []) {
     if (!turkishEdition) {
       const response = await fetch('https://api.alquran.cloud/v1/edition?language=tr&type=translation');
       if (!response.ok) throw new Error('Ayet kaynağına ulaşılamadı.');
@@ -100,7 +100,8 @@
       turkishEdition = editions.find(item => item.identifier === 'tr.diyanet')?.identifier || editions[0]?.identifier;
       if (!turkishEdition) throw new Error('Türkçe meal bulunamadı.');
     }
-    for (let attempt=0; attempt<8; attempt++) {
+    const seen = new Set(seenTexts);
+    for (let attempt=0; attempt<20; attempt++) {
       const surah = 1 + Math.floor(Math.random()*114);
       const response = await fetch(`https://api.alquran.cloud/v1/surah/${surah}/editions/quran-uthmani,${encodeURIComponent(turkishEdition)}`);
       if (!response.ok) continue;
@@ -108,7 +109,7 @@
       const arabic = result.data?.find(item=>item.edition?.identifier==='quran-uthmani');
       const turkish = result.data?.find(item=>item.edition?.identifier===turkishEdition);
       if (!arabic || !turkish) continue;
-      const candidates = turkish.ayahs.map((ayah,index)=>({turkish:ayah,arabic:arabic.ayahs[index]})).filter(pair=>{const count=pair.turkish.text.trim().split(/\s+/).length;return count>=15&&count<=25;});
+      const candidates = turkish.ayahs.map((ayah,index)=>({turkish:ayah,arabic:arabic.ayahs[index]})).filter(pair=>{const count=pair.turkish.text.trim().split(/\s+/).length;const id=pair.turkish.text.trim().replace(/\s+/g,' ').toLocaleLowerCase('tr');return count>=15&&count<=25&&!seen.has(id);});
       if (candidates.length) {
         const pair=candidates[Math.floor(Math.random()*candidates.length)];
         return {text:pair.turkish.text,arabic:pair.arabic.text,source:`Kur'an-ı Kerim · ${turkish.englishName} Suresi, ${pair.turkish.numberInSurah}. ayet`,citation:`${turkish.englishName} ${pair.turkish.numberInSurah}`};
@@ -128,9 +129,10 @@
   }
   async function getHadithContent() {
     if (hadithContent) return hadithContent;
-    const topics = ['merhamet','güzel söz','kolaylık','iyilik','sabır','şükür'];
-    const responses = await Promise.allSettled(topics.map(async topic => {
-      const params = new URLSearchParams({ q:topic, lang:'tr', limit:'10' });
+    const topics = ['merhamet','güzel söz','kolaylık','iyilik','sabır','şükür','doğruluk','komşu hakkı','anne baba','ilim','yardımlaşma','güvenilirlik','selamlaşma','öfke','kul hakkı','sadaka','tevazu','kardeşlik','temizlik','niyet'];
+    const shuffledTopics = topics.sort(() => Math.random() - .5).slice(0, 6);
+    const responses = await Promise.allSettled(shuffledTopics.map(async topic => {
+      const params = new URLSearchParams({ q:topic, lang:'tr', limit:'10', offset:String(Math.floor(Math.random() * 4) * 10) });
       const response = await fetch(`https://sunnetimiz.com/api/v1/search?${params}`);
       if (!response.ok) throw new Error('Hadis kaynağına ulaşılamadı.');
       const result = await response.json();

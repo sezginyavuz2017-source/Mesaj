@@ -7,6 +7,9 @@
   const imageGrid = $('#imageGrid');
   const card = $('#greetingCard');
   const onlineCategories = new Set(['hadith', 'dua', 'bayram', 'kandil']);
+  const textHistoryKey = 'mesaj-seen-texts-v1';
+  let textHistory = {};
+  try { textHistory = JSON.parse(localStorage.getItem(textHistoryKey) || '{}') || {}; } catch { textHistory = {}; }
   let activeMessages = [];
   let quranEntry = null;
   let selectedImage = null;
@@ -14,6 +17,30 @@
   let imageLoadToken = 0;
   let activeImageQuery = 'mosque';
   let isLoading = false;
+
+  function textId(item) {
+    return String(item?.text || '').trim().replace(/\s+/g, ' ').toLocaleLowerCase('tr');
+  }
+
+  function unseenMessages(key, list) {
+    const seen = new Set(textHistory[key] || []);
+    const unseen = list.filter(item => !seen.has(textId(item)));
+    if (unseen.length) return unseen;
+    // Start a new rotation only after every text in this category was shown.
+    textHistory[key] = [];
+    try { localStorage.setItem(textHistoryKey, JSON.stringify(textHistory)); } catch {}
+    return list;
+  }
+
+  function rememberMessage(key, item) {
+    const id = textId(item);
+    if (!id) return;
+    const seen = new Set(textHistory[key] || []);
+    if (seen.has(id)) return;
+    seen.add(id);
+    textHistory[key] = Array.from(seen).slice(-5000);
+    try { localStorage.setItem(textHistoryKey, JSON.stringify(textHistory)); } catch {}
+  }
 
   const toast = text => {
     const node = $('#toast');
@@ -40,6 +67,7 @@
 
   function updateMessage() {
     const item = category.value === 'quran' ? quranEntry : activeMessages[Number(choice.value)];
+    if (item) rememberMessage(category.value, item);
     messageText.textContent = item?.text || '';
     setSource(messageSource, item);
     $('#cardMessage').textContent = item?.text || $('#customMessage').value || 'Kalbinden geçen güzel bir söz...';
@@ -77,17 +105,17 @@
     $('#textOrder').value.split(',').forEach(key => stack.append(nodes[key]));
   }
 
-  function populateMessages(list, randomStart = false) {
-    activeMessages = list;
+  function populateMessages(list, randomStart = false, key = category.value) {
+    activeMessages = unseenMessages(key, list);
     choice.replaceChildren();
-    list.forEach((item, index) => {
+    activeMessages.forEach((item, index) => {
       const option = document.createElement('option');
       option.value = String(index);
       const reference = item.citation || item.ref || item.source || `Mesaj ${index + 1}`;
       option.textContent = `${reference} · ${item.text.slice(0, 52)}${item.text.length > 52 ? '…' : ''}`;
       choice.append(option);
     });
-    if (randomStart && list.length) choice.value = String(Math.floor(Math.random() * list.length));
+    if (randomStart && activeMessages.length) choice.value = String(Math.floor(Math.random() * activeMessages.length));
     updateMessage();
   }
 
@@ -143,7 +171,7 @@
     $('#cardMessage').textContent = 'Bir ayet yükleniyor…';
     $('#anotherMessage').disabled = true;
     try {
-      const verse = await window.MesajData.getQuranMessage();
+      const verse = await window.MesajData.getQuranMessage(textHistory.quran || []);
       if (token !== loadToken || category.value !== 'quran') return;
       quranEntry = verse;
       choice.replaceChildren(new Option(verse.citation, 'quran'));
@@ -249,11 +277,12 @@
       loadQuran();
       return;
     }
-    if (category.value === 'hadith' && choice.selectedIndex >= choice.options.length - 1) {
-      loadOnlineCategory('hadith', true);
+    if (choice.options.length < 2) return;
+    if (choice.selectedIndex >= choice.options.length - 1) {
+      if (onlineCategories.has(category.value)) loadOnlineCategory(category.value, category.value === 'hadith');
+      else populateMessages(window.MesajData.messages[category.value] || [], true, category.value);
       return;
     }
-    if (choice.options.length < 2) return;
     choice.selectedIndex = (choice.selectedIndex + 1) % choice.options.length;
     updateMessage();
   });
