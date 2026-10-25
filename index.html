@@ -99,8 +99,17 @@
         <p class="preview-hint">Her değişiklik kartına anında yansır.</p>
       </aside>
     </section>
-    <footer><a class="brand footer-brand" href="#top"><span class="brand-mark">✳</span> mesaj<span class="brand-dot">.</span></a><span>İyilik paylaştıkça çoğalır.</span><span>Kalpten kalbe, bir mesajla.</span></footer>
+    <footer><a class="brand footer-brand" href="#top"><span class="brand-mark">✳</span> mesaj<span class="brand-dot">.</span></a><span>İyilik paylaştıkça çoğalır.</span><span>Kalpten kalbe, bir mesajla.</span><a class="stats-link" href="https://mesaj.goatcounter.com/" target="_blank" rel="noopener noreferrer" aria-label="Ziyaret istatistiklerini aç">İstatistikler ↗</a></footer>
   </main>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script>
+    if (location.hostname === 'sezginyavuz2017-source.github.io') {
+      const goatCounter = document.createElement('script');
+      goatCounter.dataset.goatcounter = 'https://mesaj.goatcounter.com/count';
+      goatCounter.async = true;
+      goatCounter.src = 'https://gc.zgo.at/count.js';
+      document.head.append(goatCounter);
+    }
+  </script>
 </body>
 </html>
