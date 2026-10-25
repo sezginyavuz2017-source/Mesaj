@@ -91,7 +91,7 @@
     return found;
   }
   let turkishEdition;
-  async function getQuranMessage(seenTexts = []) {
+  async function ensureTurkishEdition() {
     if (!turkishEdition) {
       const response = await fetch('https://api.alquran.cloud/v1/edition?language=tr&type=translation');
       if (!response.ok) throw new Error('Ayet kaynağına ulaşılamadı.');
@@ -100,6 +100,10 @@
       turkishEdition = editions.find(item => item.identifier === 'tr.diyanet')?.identifier || editions[0]?.identifier;
       if (!turkishEdition) throw new Error('Türkçe meal bulunamadı.');
     }
+    return turkishEdition;
+  }
+  async function getQuranMessage(seenTexts = []) {
+    await ensureTurkishEdition();
     const seen = new Set(seenTexts);
     for (let attempt=0; attempt<20; attempt++) {
       const surah = 1 + Math.floor(Math.random()*114);
@@ -116,6 +120,87 @@
       }
     }
     throw new Error('Uygun uzunlukta bir Türkçe ayet bulunamadı. Tekrar deneyebilirsin.');
+  }
+  const quranTopicTerms = {
+    orphan: ['yetim','yetimleri','yetimlere'],
+    charity: ['sadaka','infak','sadakalar'],
+    zakat: ['zekat','zekât','zekâtı','zekâtlarını'],
+    marriage: ['evlilik','eşler','nikah','nikâh','evlenin'],
+    death: ['ölüm','ölümden','ölenler','ecel','ahiret'],
+    patience: ['sabır','sabredin','sabreden','sabredenler'],
+    gratitude: ['şükür','şükredin','şükredenler'],
+    parents: ['anne baba','ana baba','ebeveyn','anne','baba'],
+    mercy: ['merhamet','merhametli','rahmet'],
+    justice: ['adalet','adil','hakkaniyet'],
+    neighbors: ['komşu','komşuluk','komşular']
+  };
+  const quranTopicCache = new Map();
+  const arabicSurahCache = new Map();
+  function shuffled(items) {
+    const result = items.slice();
+    for (let index = result.length - 1; index > 0; index--) {
+      const swap = Math.floor(Math.random() * (index + 1));
+      [result[index], result[swap]] = [result[swap], result[index]];
+    }
+    return result;
+  }
+  async function getArabicSurah(surahNumber) {
+    if (!arabicSurahCache.has(surahNumber)) {
+      const request = fetch(`https://api.alquran.cloud/v1/surah/${surahNumber}/editions/quran-uthmani,${encodeURIComponent(turkishEdition)}`)
+        .then(response => {
+          if (!response.ok) throw new Error('Arapça ayetler alınamadı.');
+          return response.json();
+        })
+        .then(result => {
+          const arabic = result.data?.find(item => item.edition?.identifier === 'quran-uthmani');
+          if (!arabic) throw new Error('Arapça metin bulunamadı.');
+          return arabic;
+        })
+        .catch(error => { arabicSurahCache.delete(surahNumber); throw error; });
+      arabicSurahCache.set(surahNumber, request);
+    }
+    return arabicSurahCache.get(surahNumber);
+  }
+  async function getThematicQuranMessages(topic, seenTexts = []) {
+    await ensureTurkishEdition();
+    const terms = quranTopicTerms[topic];
+    if (!terms) throw new Error('Bu ayet konusu tanınmıyor.');
+    let matches = quranTopicCache.get(topic);
+    if (!matches) {
+      const results = await Promise.allSettled(terms.map(async term => {
+        const response = await fetch(`https://api.alquran.cloud/v1/search/${encodeURIComponent(term)}/all/${encodeURIComponent(turkishEdition)}`);
+        if (!response.ok) throw new Error('Ayet kaynağına ulaşılamadı.');
+        const result = await response.json();
+        return result.data?.matches || [];
+      }));
+      const unique = new Map();
+      results.filter(result => result.status === 'fulfilled').forEach(result => result.value.forEach(match => {
+        const words = match.text?.trim().split(/\s+/).length || 0;
+        const id = `${match.surah?.number}:${match.numberInSurah}`;
+        if (match.text && words >= 15 && words <= 25 && match.surah?.number && match.numberInSurah && !unique.has(id)) unique.set(id, match);
+      }));
+      matches = Array.from(unique.values());
+      if (!matches.length) throw new Error('Bu konuda uygun uzunlukta Türkçe ayet bulunamadı.');
+      quranTopicCache.set(topic, matches);
+    }
+    const seen = new Set(seenTexts);
+    const fresh = matches.filter(match => !seen.has(match.text.trim().replace(/\s+/g, ' ').toLocaleLowerCase('tr')));
+    const selected = shuffled(fresh.length ? fresh : matches).slice(0, 12);
+    const surahNumbers = [...new Set(selected.map(match => match.surah.number))];
+    const surahs = await Promise.allSettled(surahNumbers.map(getArabicSurah));
+    const arabicBySurah = new Map();
+    surahs.filter(result => result.status === 'fulfilled').forEach(result => arabicBySurah.set(result.value.number, result.value));
+    return selected.map(match => {
+      const surah = arabicBySurah.get(match.surah.number);
+      const arabic = surah?.ayahs.find(ayah => ayah.numberInSurah === match.numberInSurah)?.text || '';
+      return {
+        text: match.text,
+        arabic,
+        citation: `${match.surah.englishName} ${match.numberInSurah}`,
+        source: `Kur'an-ı Kerim · ${match.surah.englishName} Suresi, ${match.numberInSurah}. ayet`,
+        sourceUrl: `https://quran.com/${match.surah.number}/${match.numberInSurah}`
+      };
+    });
   }
   let seasonalContent;
   let hadithContent;
@@ -159,5 +244,5 @@
     hadithContent = null;
     return getHadithContent();
   }
-  window.MesajData = { messages, titles, categories, searchCommons, getQuranMessage, getOnlineMessages, refreshHadithMessages };
+  window.MesajData = { messages, titles, categories, searchCommons, getQuranMessage, getThematicQuranMessages, getOnlineMessages, refreshHadithMessages };
 })();

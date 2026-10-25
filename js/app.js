@@ -12,6 +12,7 @@
   try { textHistory = JSON.parse(localStorage.getItem(textHistoryKey) || '{}') || {}; } catch { textHistory = {}; }
   let activeMessages = [];
   let quranEntry = null;
+  let thematicQuran = false;
   let selectedImage = null;
   let loadToken = 0;
   let imageLoadToken = 0;
@@ -67,14 +68,15 @@
 
   function updateMessage() {
     const item = category.value === 'quran' ? quranEntry : activeMessages[Number(choice.value)];
-    if (item) rememberMessage(category.value, item);
-    messageText.textContent = item?.text || '';
-    setSource(messageSource, item);
-    $('#cardMessage').textContent = item?.text || $('#customMessage').value || 'Kalbinden geçen güzel bir söz...';
-    setSource($('#cardSource'), item, '— ');
+    const selectedItem = category.value === 'quran' && thematicQuran && activeMessages.length ? activeMessages[Number(choice.value)] : item;
+    if (selectedItem) rememberMessage(category.value, selectedItem);
+    messageText.textContent = selectedItem?.text || '';
+    setSource(messageSource, selectedItem);
+    $('#cardMessage').textContent = selectedItem?.text || $('#customMessage').value || 'Kalbinden geçen güzel bir söz...';
+    setSource($('#cardSource'), selectedItem, '— ');
     const arabic = $('#cardArabic');
-    arabic.textContent = item?.arabic || '';
-    arabic.classList.toggle('hidden', !(category.value === 'quran' && $('#showArabic').checked && item?.arabic));
+    arabic.textContent = selectedItem?.arabic || '';
+    arabic.classList.toggle('hidden', !(category.value === 'quran' && $('#showArabic').checked && selectedItem?.arabic));
   }
 
   function updateCard() {
@@ -84,6 +86,7 @@
     $('#customBlock').classList.toggle('hidden', key !== 'custom');
     $('#messagePickerBlock').classList.toggle('hidden', key === 'custom');
     $('#arabicToggle').classList.toggle('hidden', key !== 'quran');
+    $('#quranTopicBlock').classList.toggle('hidden', key !== 'quran');
     $('.order-block').classList.toggle('hidden', key !== 'quran');
     if (key !== 'custom') updateMessage();
     else {
@@ -107,6 +110,7 @@
 
   function populateMessages(list, randomStart = false, key = category.value) {
     activeMessages = unseenMessages(key, list);
+    if (key === 'quran' && $('#quranTopic').value !== 'random') activeMessages.forEach(item => rememberMessage(key, item));
     choice.replaceChildren();
     activeMessages.forEach((item, index) => {
       const option = document.createElement('option');
@@ -164,6 +168,8 @@
     const token = ++loadToken;
     isLoading = true;
     quranEntry = null;
+    activeMessages = [];
+    thematicQuran = false;
     choice.replaceChildren(new Option('Türkçe ayet getiriliyor…', ''));
     choice.disabled = true;
     messageText.textContent = 'Türkçe meal aranıyor…';
@@ -171,6 +177,16 @@
     $('#cardMessage').textContent = 'Bir ayet yükleniyor…';
     $('#anotherMessage').disabled = true;
     try {
+      const topic = $('#quranTopic').value;
+      const verses = topic === 'random'
+        ? null
+        : await window.MesajData.getThematicQuranMessages(topic, textHistory.quran || []);
+      if (token !== loadToken || category.value !== 'quran') return;
+      if (verses) {
+        thematicQuran = true;
+        populateMessages(verses, true, 'quran');
+        return;
+      }
       const verse = await window.MesajData.getQuranMessage(textHistory.quran || []);
       if (token !== loadToken || category.value !== 'quran') return;
       quranEntry = verse;
@@ -257,6 +273,8 @@
 
   category.addEventListener('change', () => {
     quranEntry = null;
+    thematicQuran = false;
+    activeMessages = [];
     if (category.value === 'quran') {
       updateCard();
       loadQuran();
@@ -271,6 +289,9 @@
     }
   });
   choice.addEventListener('change', updateMessage);
+  $('#quranTopic').addEventListener('change', () => {
+    if (category.value === 'quran') loadQuran();
+  });
   $('#anotherMessage').addEventListener('click', () => {
     if (isLoading) return;
     if (category.value === 'quran') {
