@@ -8,3 +8,4 @@
 .preview-close{display:none;border:1px solid #d9d5ca;border-radius:4px;padding:7px 9px;background:var(--white);color:#596c60;font:600 10px "DM Sans",sans-serif;cursor:pointer}.preview-close:focus-visible{outline:2px solid #829588;outline-offset:2px}@media(max-width:680px){.workspace:has(.text-size-panel[open]) .preview-close{display:inline-flex;align-items:center;gap:4px}.workspace:has(.text-size-panel[open]) .live-indicator{margin-left:auto;margin-right:8px}}
 .image-category-picker{margin-top:8px}
 .topbar .brand-mark{color:#d62828}
+.footer-credit{flex-basis:100%;margin-top:4px;text-align:center;font-size:9px;color:#92968e}
