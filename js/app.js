@@ -62,6 +62,12 @@
     toast.timer = setTimeout(() => node.classList.remove('show'), 2800);
   };
 
+  const legalDialog = $('#legalDialog');
+  $('#legalLink').addEventListener('click', () => legalDialog.showModal());
+  legalDialog.addEventListener('click', event => {
+    if (event.target === legalDialog) legalDialog.close();
+  });
+
   function setSource(node, item, prefix = '') {
     node.replaceChildren();
     if (!item?.source) return;
