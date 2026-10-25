@@ -6,7 +6,7 @@
   const messageSource = $('#messageSource');
   const imageGrid = $('#imageGrid');
   const card = $('#greetingCard');
-  const onlineCategories = new Set(['hadith', 'dua', 'bayram', 'kandil']);
+  const onlineCategories = new Set(['hadith', 'dua', 'bayram', 'kandil', 'esma']);
   const textHistoryKey = 'mesaj-seen-texts-v1';
   let textHistory = {};
   try { textHistory = JSON.parse(localStorage.getItem(textHistoryKey) || '{}') || {}; } catch { textHistory = {}; }
@@ -76,7 +76,7 @@
     setSource($('#cardSource'), selectedItem, '— ');
     const arabic = $('#cardArabic');
     arabic.textContent = selectedItem?.arabic || '';
-    arabic.classList.toggle('hidden', !(category.value === 'quran' && $('#showArabic').checked && selectedItem?.arabic));
+    arabic.classList.toggle('hidden', !(['quran', 'esma'].includes(category.value) && $('#showArabic').checked && selectedItem?.arabic));
   }
 
   function updateCard() {
@@ -85,9 +85,9 @@
     $('#cardKicker').textContent = window.MesajData.categories[key] || 'KUR’AN-I KERİM’DEN';
     $('#customBlock').classList.toggle('hidden', key !== 'custom');
     $('#messagePickerBlock').classList.toggle('hidden', key === 'custom');
-    $('#arabicToggle').classList.toggle('hidden', key !== 'quran');
+    $('#arabicToggle').classList.toggle('hidden', !['quran', 'esma'].includes(key));
     $('#quranTopicBlock').classList.toggle('hidden', key !== 'quran');
-    $('.order-block').classList.toggle('hidden', key !== 'quran');
+    $('.order-block').classList.toggle('hidden', !['quran', 'esma'].includes(key));
     if (key !== 'custom') updateMessage();
     else {
       $('#cardMessage').textContent = $('#customMessage').value || 'Kalbinden geçen güzel bir söz...';
@@ -109,7 +109,7 @@
   }
 
   function populateMessages(list, randomStart = false, key = category.value) {
-    activeMessages = unseenMessages(key, list);
+    activeMessages = key === 'esma' ? list : unseenMessages(key, list);
     if (key === 'quran' && $('#quranTopic').value !== 'random') activeMessages.forEach(item => rememberMessage(key, item));
     choice.replaceChildren();
     activeMessages.forEach((item, index) => {
@@ -299,6 +299,13 @@
       return;
     }
     if (choice.options.length < 2) return;
+    if (category.value === 'esma') {
+      const current = choice.selectedIndex;
+      const next = Math.floor(Math.random() * (choice.options.length - 1));
+      choice.selectedIndex = next >= current ? next + 1 : next;
+      updateMessage();
+      return;
+    }
     if (choice.selectedIndex >= choice.options.length - 1) {
       if (onlineCategories.has(category.value)) loadOnlineCategory(category.value, category.value === 'hadith');
       else populateMessages(window.MesajData.messages[category.value] || [], true, category.value);

@@ -32,8 +32,8 @@
       { text: 'Yarım hurma vererek de olsa kendinizi ateşten koruyun.', source: 'Sahih-i Buhari, 1417' }
     ]
   };
-  const titles = { cuma: 'Hayırlı Cumalar', bayram: 'İyi Bayramlar', kandil: 'Kandiliniz Mübarek Olsun', dua: 'Gönülden Bir Dua', hadith:'Güzel Bir Hadis', custom: 'Sana özel bir mesaj' };
-  const categories = { cuma: 'GÜZEL BİR CUMA DİLEĞİ', bayram: 'BAYRAM SEVİNCİ', kandil: 'MÜBAREK BİR GECE', dua: 'GÖNÜLDEN BİR DUA', hadith:'PEYGAMBERİMİZDEN BİR ÖĞÜT', custom: 'SANA ÖZEL' };
+  const titles = { cuma: 'Hayırlı Cumalar', bayram: 'İyi Bayramlar', kandil: 'Kandiliniz Mübarek Olsun', dua: 'Gönülden Bir Dua', hadith:'Güzel Bir Hadis', esma: 'Esmaü’l-Hüsna', custom: 'Sana özel bir mesaj' };
+  const categories = { cuma: 'GÜZEL BİR CUMA DİLEĞİ', bayram: 'BAYRAM SEVİNCİ', kandil: 'MÜBAREK BİR GECE', dua: 'GÖNÜLDEN BİR DUA', hadith:'PEYGAMBERİMİZDEN BİR ÖĞÜT', esma: 'ALLAH’IN GÜZEL İSİMLERİ', custom: 'SANA ÖZEL' };
   const imageSearchVariants = {
     mosque: ['mosque', 'Ottoman mosque', 'Sultan Ahmet Mosque', 'mosque minaret', 'Islamic architecture'],
     cami: ['mosque', 'Ottoman mosque', 'Sultan Ahmet Mosque', 'mosque minaret', 'Islamic architecture'],
@@ -235,6 +235,12 @@
   }
   async function getOnlineMessages(category) {
     if(category==='hadith') return getHadithContent();
+    if(category==='esma') {
+      const response=await fetch('./data/esmaul-husna-tr.json');
+      if(!response.ok) throw new Error('Esmaü’l-Hüsna listesi yüklenemedi.');
+      const names=await response.json();
+      return names.map(item=>({text:`${item.name} — ${item.meaning}`,arabic:item.arabic,citation:`${item.number}. ${item.name}`,source:'Yaygın Tirmizî listesi · TDV İslâm Ansiklopedisi',sourceUrl:'https://islamansiklopedisi.org.tr/esma-i-husna'}));
+    }
     const content=await getSeasonalContent();
     const messages=content[category];
     if(!Array.isArray(messages)||!messages.length) throw new Error('Bu kategori için çevrimiçi mesaj bulunamadı.');
