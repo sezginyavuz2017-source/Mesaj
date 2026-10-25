@@ -28,7 +28,7 @@
       try {
         const file = await createImageFile(card);
         if (navigator.canShare({ files: [file] })) {
-          await navigator.share({ title: value.title, text, files: [file] });
+          await navigator.share({ files: [file] });
           return 'shared';
         }
       } catch (error) {
