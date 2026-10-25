@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nurî İslami Kart ve Mesaj Üreticisi</title>
+    <title>Mesaj</title>
     <meta name="description" content="İslami mesaj kartları, dua metinleri ve bayram-cuma-kandil kutlamaları için hazır tasarım aracı.">
-    <meta property="og:title" content="Nurî İslami Kart ve Mesaj Üreticisi">
+    <meta property="og:title" content="Mesaj">
     <meta property="og:description" content="Arka planda otomatik İslami görsel seçimi ve WhatsApp paylaşım sistemi ile mesaj kartları oluşturun.">
     <meta property="og:type" content="website">
     <meta property="og:image" content="https://images.unsplash.com/photo-1564769625405-49e095204fb9?auto=format&fit=crop&w=1200&q=80">
     <meta property="og:image:alt" content="İslami mesaj kartı arka plan görseli">
     <meta property="og:url" content="https://sezginyavuz2017-source.github.io/Mesaj/">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Nurî İslami Kart ve Mesaj Üreticisi">
+    <meta name="twitter:title" content="Mesaj">
     <meta name="twitter:description" content="İslami mesaj kartları, dua metinleri ve bayram-cuma-kandil kutlamaları için hazır tasarım aracı.">
     <meta name="twitter:image" content="https://images.unsplash.com/photo-1564769625405-49e095204fb9?auto=format&fit=crop&w=1200&q=80">
     <link rel="canonical" href="https://sezginyavuz2017-source.github.io/Mesaj/">
@@ -56,7 +56,7 @@
 
     <div class="max-w-5xl w-full mx-auto space-y-8">
         <header class="text-center space-y-2">
-            <h1 class="text-3xl md:text-4xl font-display font-bold text-amber-400 tracking-wide">Nurî Mesaj ve Kart Tasarımcısı</h1>
+            <h1 class="text-3xl md:text-4xl font-display font-bold text-amber-400 tracking-wide">Mesaj</h1>
             <p class="text-slate-400 text-sm md:text-base">Arka plan görseli seçimi, tema bazlı arama ve WhatsApp paylaşım sistemi.</p>
         </header>
 
@@ -88,6 +88,12 @@
                         <input id="imageSearchInput" type="text" value="mosque" placeholder="ör: mosque, prayer, ramadan, garden" class="flex-1 bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:border-amber-500">
                         <button onclick="searchImages()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold px-4 py-3 rounded-xl text-sm transition">Ara</button>
                     </div>
+                    <div class="flex gap-2 mt-2">
+                        <button type="button" onclick="document.getElementById('imageUpload').click()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium py-2.5 px-3 rounded-xl text-sm transition border border-slate-700">
+                            📷 Telefon Görseli Yükle
+                        </button>
+                        <input id="imageUpload" type="file" accept="image/*" class="hidden">
+                    </div>
                 </div>
 
                 <div>
@@ -97,7 +103,7 @@
 
                 <div>
                     <label class="block text-sm font-medium text-amber-300 mb-2">Gönderen Adı (İmza)</label>
-                    <input type="text" id="signatureInput" value="Hayırlı Dualarla" oninput="updateSignature()" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:border-amber-500">
+                    <input type="text" id="signatureInput" value="Sezgin Yavuz" oninput="updateSignature()" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:border-amber-500">
                 </div>
             </div>
 
@@ -121,8 +127,8 @@
                     </div>
 
                     <div class="relative z-10 flex justify-between items-end pt-4 border-t border-white/10">
-                        <div class="text-[11px] text-slate-400 tracking-wider">NURÎ İSLAMİ KARTLAR</div>
-                        <div id="displaySignature" class="text-sm font-semibold text-amber-300 italic">Hayırlı Dualarla</div>
+                        <div class="text-[11px] text-slate-400 tracking-wider">MESAJ</div>
+                        <div id="displaySignature" class="text-sm font-semibold text-amber-300 italic">Sezgin Yavuz</div>
                     </div>
                 </div>
 
@@ -171,6 +177,23 @@
             'https://images.unsplash.com/photo-1517486800575-8e5eacb3e94d?auto=format&fit=crop&w=1200&q=80',
             'https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&w=1200&q=80'
         ];
+
+        const uploadInput = document.getElementById('imageUpload');
+        if (uploadInput) {
+            uploadInput.addEventListener('change', function (event) {
+                const file = event.target.files && event.target.files[0];
+                if (!file || !file.type.startsWith('image/')) return;
+
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const uploaded = e.target.result;
+                    const mixed = [uploaded, ...imageFallbacks].slice(0, 8);
+                    renderThumbs(mixed, uploaded);
+                    setCardBackgroundByUrl(uploaded);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
 
         function updateSocialPreviewMeta(imageUrl) {
             const metaOg = document.querySelector('meta[property="og:image"]');
