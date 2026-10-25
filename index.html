@@ -16,25 +16,16 @@
     <meta name="twitter:description" content="İslami mesaj kartları, dua metinleri ve bayram-cuma-kandil kutlamaları için hazır tasarım aracı.">
     <meta name="twitter:image" content="https://images.unsplash.com/photo-1564769625405-49e095204fb9?auto=format&fit=crop&w=1200&q=80">
     <link rel="canonical" href="https://sezginyavuz2017-source.github.io/Mesaj/">
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- html2canvas for card download -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
         .font-arabic { font-family: 'Amiri', serif; }
         .font-display { font-family: 'Playfair Display', serif; }
-        .glow-effect {
-            text-shadow: 0 0 20px rgba(255, 215, 0, 0.6), 0 0 40px rgba(255, 215, 0, 0.3);
-        }
-        .card-shadow {
-            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
-        }
-        .light-ray {
-            background: linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0) 60%);
-        }
+        .glow-effect { text-shadow: 0 0 20px rgba(255, 215, 0, 0.6), 0 0 40px rgba(255, 215, 0, 0.3); }
+        .card-shadow { box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5); }
+        .light-ray { background: linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0) 60%); }
         .card-image {
             position: absolute;
             inset: 0;
@@ -43,14 +34,27 @@
             object-fit: cover;
             display: block;
         }
+        .mini-thumb {
+            width: 72px;
+            height: 72px;
+            border-radius: 14px;
+            object-fit: cover;
+            border: 2px solid transparent;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+            cursor: pointer;
+        }
+        .mini-thumb:hover, .mini-thumb.active {
+            transform: translateY(-2px);
+            border-color: rgba(251, 191, 36, 0.9);
+        }
     </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col items-center justify-start p-4 md:p-8">
 
-    <div class="max-w-4xl w-full mx-auto space-y-8">
+    <div class="max-w-5xl w-full mx-auto space-y-8">
         <header class="text-center space-y-2">
             <h1 class="text-3xl md:text-4xl font-display font-bold text-amber-400 tracking-wide">Nurî Mesaj ve Kart Tasarımcısı</h1>
-            <p class="text-slate-400 text-sm md:text-base">Arka planda otomatik İslami görsel seçimi ve WhatsApp paylaşım sistemi.</p>
+            <p class="text-slate-400 text-sm md:text-base">Arka planda otomatik İslami görsel seçimi, tema bazlı arama ve WhatsApp paylaşım sistemi.</p>
         </header>
 
         <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
@@ -76,14 +80,16 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-amber-300 mb-2">Arka Plan Görsel Konusu (Arka Planda Seçilir)</label>
-                    <select id="bgQuerySelect" onchange="fetchBackgroundByQuery()" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:border-amber-500">
-                        <option value="mosque architecture minaret sunset">Görkemli Camii ve Minareler (Akşam)</option>
-                        <option value="islamic prayer silhouette spiritual man">Namaz Kılan / Dua Eden Kul (Silüet)</option>
-                        <option value="peaceful nature sunlight trees sky">Huzurlu Doğa ve Işık Süzmesi</option>
-                        <option value="islamic geometric pattern gold luxury">İslami Geometrik Desenler ve Altın</option>
-                        <option value="peaceful garden flowers nature">Huzur Veren Çiçek ve Bahçe Manzarası</option>
-                    </select>
+                    <label class="block text-sm font-medium text-amber-300 mb-2">Arka Plan Görseli</label>
+                    <div class="flex gap-2">
+                        <input id="imageSearchInput" type="text" value="mosque" placeholder="ör: mosque, prayer, ramadan, garden" class="flex-1 bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-slate-200 focus:outline-none focus:border-amber-500">
+                        <button onclick="searchImages()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold px-4 py-3 rounded-xl text-sm transition">Ara</button>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-amber-300 mb-2">Kullanılacak Görsel Seçimi</label>
+                    <div id="imageThumbs" class="flex flex-wrap gap-2 justify-start"></div>
                 </div>
 
                 <div>
@@ -161,6 +167,14 @@
         };
 
         let currentType = 'cuma';
+        const unsplashSeedTopics = [
+            'mosque',
+            'islamic prayer',
+            'ramadan',
+            'islamic pattern',
+            'garden',
+            'nature' 
+        ];
 
         function updateSocialPreviewMeta(imageUrl) {
             const metaOg = document.querySelector('meta[property="og:image"]');
@@ -182,9 +196,49 @@
             setCardImage(url, 'İslami mesaj kartı arka plan görseli');
         }
 
+        function buildUnsplashUrl(query, count = 6) {
+            const cleanQuery = encodeURIComponent((query || 'mosque').trim() || 'mosque');
+            const seed = Math.random().toString(36).slice(2, 10);
+            return `https://source.unsplash.com/featured/${count}x${count}?${cleanQuery}&sig=${seed}`;
+        }
+
+        function renderThumbs(urls, activeUrl) {
+            const thumbs = document.getElementById('imageThumbs');
+            thumbs.innerHTML = '';
+            urls.forEach(url => {
+                const img = document.createElement('img');
+                img.src = url;
+                img.alt = 'Seçilebilir arka plan görseli';
+                img.className = 'mini-thumb ' + (url === activeUrl ? 'active' : '');
+                img.onclick = () => {
+                    setCardBackgroundByUrl(url);
+                    document.querySelectorAll('.mini-thumb').forEach(el => el.classList.remove('active'));
+                    img.classList.add('active');
+                };
+                thumbs.appendChild(img);
+            });
+        }
+
+        function searchImages() {
+            const query = document.getElementById('imageSearchInput').value.trim() || 'mosque';
+            const urls = [];
+            const max = 6;
+            for (let i = 0; i < max; i++) {
+                urls.push(buildUnsplashUrl(query, 1200));
+            }
+            renderThumbs(urls, urls[0]);
+            setCardBackgroundByUrl(urls[0]);
+        }
+
+        function seedRandomThemeImages() {
+            const picked = unsplashSeedTopics[Math.floor(Math.random() * unsplashSeedTopics.length)];
+            document.getElementById('imageSearchInput').value = picked;
+            searchImages();
+        }
+
         window.onload = function() {
             updateContentOptions();
-            fetchBackgroundByQuery();
+            seedRandomThemeImages();
         };
 
         function setContentType(type) {
@@ -237,26 +291,6 @@
         function updateGreeting() {
             const val = document.getElementById('greetingInput').value;
             document.getElementById('displayGreeting').textContent = val || 'Hayırlı Cumalar';
-        }
-
-        function fetchBackgroundByQuery() {
-            const query = document.getElementById('bgQuerySelect').value;
-            const randomId = Math.floor(Math.random() * 1000);
-            let imageUrl = `https://picsum.photos/seed/${encodeURIComponent(query)}_${randomId}/1200/1500`;
-
-            if(query.includes('mosque')) {
-                imageUrl = `https://images.unsplash.com/photo-1564769625405-49e095204fb9?auto=format&fit=crop&w=1200&q=80`;
-            } else if(query.includes('prayer')) {
-                imageUrl = `https://images.unsplash.com/photo-1590076215667-87bbd6ccf2f3?auto=format&fit=crop&w=1200&q=80`;
-            } else if(query.includes('nature')) {
-                imageUrl = `https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1200&q=80`;
-            } else if(query.includes('geometric')) {
-                imageUrl = `https://images.unsplash.com/photo-1519817650390-64a93db51149?auto=format&fit=crop&w=1200&q=80`;
-            } else if(query.includes('garden')) {
-                imageUrl = `https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=1200&q=80`;
-            }
-
-            setCardBackgroundByUrl(imageUrl);
         }
 
         function updateSignature() {
