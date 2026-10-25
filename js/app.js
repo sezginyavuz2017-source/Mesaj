@@ -337,10 +337,13 @@
     sizePanel.querySelector('summary').focus();
   });
   $('#textOrder').addEventListener('change', applyTextOrder);
-  document.querySelectorAll('.suggestions [data-query]').forEach(button => button.addEventListener('click', () => {
-    $('#imageSearch').value = button.dataset.query;
+  $('#imageCategory').addEventListener('change', event => {
+    const query = event.target.value;
+    if (!query) return;
+    $('#imageSearch').value = query;
+    event.target.value = '';
     searchImages();
-  }));
+  });
   $('#customMessage').addEventListener('input', event => {
     $('#charCount').textContent = event.target.value.length;
     updateCard();

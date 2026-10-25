@@ -45,6 +45,10 @@
     kandil: ['Ramadan lantern', 'mosque at night', 'Islamic architecture night', 'minaret night sky', 'Ramadan decorations'],
     nature: ['nature landscape', 'mountain landscape', 'forest sunlight', 'calm sea landscape', 'flower field'],
     doğa: ['nature landscape', 'mountain landscape', 'forest sunlight', 'calm sea landscape', 'flower field'],
+    'islamic pattern': ['Islamic geometric pattern', 'Islamic pattern ornament', 'Islamic star pattern', 'Islamic tile pattern', 'Ottoman geometric pattern'],
+    'islamic art background': ['Islamic art background', 'Islamic geometric art background', 'Islamic pattern background', 'Islamic ornamental background', 'Islamic architecture background'],
+    'gold islamic ornament': ['gold Islamic ornament', 'gold Islamic pattern', 'gold arabesque ornament', 'gold Ottoman ornament', 'gold Islamic geometric design'],
+    'arabesque texture': ['arabesque texture', 'Islamic arabesque pattern', 'arabesque ornament', 'Islamic floral arabesque', 'Ottoman arabesque design'],
     ramazan: ['Ramadan lantern', 'Ramadan decorations', 'mosque at night', 'fanous lantern', 'Ramadan mosque']
   };
   const imageSearchState = new Map();
