@@ -74,5 +74,46 @@
     }
     throw new Error('Uygun uzunlukta bir Türkçe ayet bulunamadı. Tekrar deneyebilirsin.');
   }
-  window.MesajData = { messages, titles, categories, searchCommons, searchUnsplash, getQuranMessage };
+  let seasonalContent;
+  let hadithContent;
+  async function getSeasonalContent() {
+    if (!seasonalContent) {
+      const response = await fetch('./data/mesajlar-tr.json', { cache:'no-cache' });
+      if (!response.ok) throw new Error('Mesaj kataloğu yüklenemedi.');
+      seasonalContent = await response.json();
+    }
+    return seasonalContent;
+  }
+  async function getHadithContent() {
+    if (hadithContent) return hadithContent;
+    const topics = ['merhamet','güzel söz','kolaylık','iyilik','sabır','şükür'];
+    const responses = await Promise.allSettled(topics.map(async topic => {
+      const params = new URLSearchParams({ q:topic, lang:'tr', limit:'10' });
+      const response = await fetch(`https://sunnetimiz.com/api/v1/search?${params}`);
+      if (!response.ok) throw new Error('Hadis kaynağına ulaşılamadı.');
+      const result = await response.json();
+      return result.results || [];
+    }));
+    const unique = new Map();
+    responses.filter(result=>result.status==='fulfilled').forEach(result=>result.value.forEach(hadith=>{
+      const text=hadith.turkish;
+      const words=text?.trim().split(/\s+/).length||0;
+      if(text&&words>=15&&words<=25&&hadith.ref&&!unique.has(hadith.ref)) unique.set(hadith.ref,{text,arabic:hadith.arabic||'',source:`Kaynak: Sünnetimiz.com · ${hadith.ref}`,sourceUrl:hadith.url||`https://sunnetimiz.com/${hadith.ref}`});
+    }));
+    if(!unique.size) throw new Error('Şu anda uygun uzunlukta çevrimiçi hadis bulunamadı.');
+    hadithContent=Array.from(unique.values()).sort(()=>Math.random()-.5);
+    return hadithContent;
+  }
+  async function getOnlineMessages(category) {
+    if(category==='hadith') return getHadithContent();
+    const content=await getSeasonalContent();
+    const messages=content[category];
+    if(!Array.isArray(messages)||!messages.length) throw new Error('Bu kategori için çevrimiçi mesaj bulunamadı.');
+    return messages;
+  }
+  async function refreshHadithMessages() {
+    hadithContent = null;
+    return getHadithContent();
+  }
+  window.MesajData = { messages, titles, categories, searchCommons, searchUnsplash, getQuranMessage, getOnlineMessages, refreshHadithMessages };
 })();
