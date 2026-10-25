@@ -84,7 +84,8 @@
     messageText.textContent = selectedItem?.text || '';
     setSource(messageSource, selectedItem);
     $('#cardMessage').textContent = selectedItem?.text || $('#customMessage').value || 'Kalbinden geçen güzel bir söz...';
-    setSource($('#cardSource'), selectedItem, '— ');
+    if (['quran', 'hadith'].includes(category.value)) setSource($('#cardSource'), selectedItem, '— ');
+    else $('#cardSource').replaceChildren();
     const arabic = $('#cardArabic');
     arabic.textContent = selectedItem?.arabic || '';
     arabic.classList.toggle('hidden', !(['quran', 'esma'].includes(category.value) && $('#showArabic').checked && selectedItem?.arabic));

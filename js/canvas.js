@@ -9,7 +9,6 @@
     const opacity = Number(card.dataset.overlay || 38)/100;
     const gradient = context.createLinearGradient(0,0,0,height); gradient.addColorStop(0,`rgba(10,26,20,${opacity*.55})`); gradient.addColorStop(.48,`rgba(10,26,20,${opacity*.74})`); gradient.addColorStop(1,`rgba(10,26,20,${Math.min(.94,opacity+0.32)})`);
     context.fillStyle=gradient; context.fillRect(0,0,width,height); context.textAlign='center'; context.fillStyle='#e5c697';
-    context.font='48px Georgia'; context.fillText('✳',width/2,320);
     const hasKicker=!card.querySelector('#cardKicker').classList.contains('hidden');
     if(hasKicker){context.fillStyle='#ead7b5';context.font='22px Arial';context.fillText(card.querySelector('#cardKicker').textContent,width/2,390);}
     const titleScale=Number(card.dataset.titleSize||100)/100;
