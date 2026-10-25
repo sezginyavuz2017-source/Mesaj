@@ -148,6 +148,18 @@
     neighbors: ['komşu','komşuluk','komşular']
   };
   const quranTopicCache = new Map();
+  const hadithTopicTerms = {
+    faith: ['iman','ahiret','Allah’a iman'],
+    worship: ['ibadet','namaz','dua','oruç'],
+    character: ['güzel ahlak','güzel söz','doğruluk','tevazu'],
+    family: ['anne baba','aile','sıla-i rahim'],
+    charity: ['sadaka','yardımlaşma','infak','komşu hakkı'],
+    knowledge: ['ilim','öğrenmek','bilgi'],
+    patience: ['sabır','şükür','sabreden'],
+    mercy: ['merhamet','kardeşlik','iyilik'],
+    rights: ['komşu hakkı','kul hakkı','emanet']
+  };
+  const hadithTopicCache = new Map();
   const arabicSurahCache = new Map();
   function shuffled(items) {
     const result = items.slice();
@@ -246,6 +258,29 @@
     hadithContent=Array.from(unique.values()).sort(()=>Math.random()-.5);
     return hadithContent;
   }
+  async function getThematicHadithMessages(topic, refresh = false) {
+    const terms = hadithTopicTerms[topic];
+    if (!terms) throw new Error('Bu hadis konusu tanınmıyor.');
+    if (refresh) hadithTopicCache.delete(topic);
+    if (hadithTopicCache.has(topic)) return hadithTopicCache.get(topic);
+    const responses = await Promise.allSettled(terms.map(async term => {
+      const params = new URLSearchParams({ q:term, lang:'tr', limit:'10', offset:String(Math.floor(Math.random() * 4) * 10) });
+      const response = await fetch(`https://sunnetimiz.com/api/v1/search?${params}`);
+      if (!response.ok) throw new Error('Hadis kaynağına ulaşılamadı.');
+      const result = await response.json();
+      return result.results || [];
+    }));
+    const unique = new Map();
+    responses.filter(result=>result.status==='fulfilled').forEach(result=>result.value.forEach(hadith=>{
+      const text=hadith.turkish;
+      const words=text?.trim().split(/\s+/).length||0;
+      if(text&&words>=15&&words<=25&&hadith.ref&&!unique.has(hadith.ref)) unique.set(hadith.ref,{text,arabic:hadith.arabic||'',source:`Kaynak: Sünnetimiz.com · ${hadith.ref}`,sourceUrl:hadith.url||`https://sunnetimiz.com/${hadith.ref}`});
+    }));
+    const matches=Array.from(unique.values()).sort(()=>Math.random()-.5);
+    if(!matches.length) throw new Error('Zu diesem Thema konnten gerade keine passenden Hadithe geladen werden.');
+    hadithTopicCache.set(topic,matches);
+    return matches;
+  }
   async function getOnlineMessages(category) {
     if(category==='hadith') return getHadithContent();
     if(category==='esma') {
@@ -263,5 +298,5 @@
     hadithContent = null;
     return getHadithContent();
   }
-  window.MesajData = { messages, titles, categories, searchCommons, getQuranMessage, getThematicQuranMessages, getOnlineMessages, refreshHadithMessages };
+  window.MesajData = { messages, titles, categories, searchCommons, getQuranMessage, getThematicQuranMessages, getThematicHadithMessages, getOnlineMessages, refreshHadithMessages };
 })();

@@ -101,6 +101,7 @@
     $('#arabicToggle').classList.toggle('hidden', !['quran', 'esma'].includes(key));
     $('#cardBasmala').classList.toggle('hidden', key !== 'quran');
     $('#quranTopicBlock').classList.toggle('hidden', key !== 'quran');
+    $('#hadithTopicBlock').classList.toggle('hidden', key !== 'hadith');
     $('.order-block').classList.toggle('hidden', !['quran', 'esma'].includes(key));
     if (key !== 'custom') updateMessage();
     else {
@@ -151,14 +152,17 @@
     $('#cardSource').replaceChildren();
     $('#cardArabic').classList.add('hidden');
     try {
-      const list = refresh && key === 'hadith'
-        ? await window.MesajData.refreshHadithMessages()
-        : await window.MesajData.getOnlineMessages(key);
+      const hadithTopic = key === 'hadith' ? $('#hadithTopic').value : 'random';
+      const list = key === 'hadith' && hadithTopic !== 'random'
+        ? await window.MesajData.getThematicHadithMessages(hadithTopic, refresh)
+        : refresh && key === 'hadith'
+          ? await window.MesajData.refreshHadithMessages()
+          : await window.MesajData.getOnlineMessages(key);
       if (token !== loadToken || category.value !== key) return;
       populateMessages(list, true);
     } catch (error) {
       if (token !== loadToken || category.value !== key) return;
-      const fallback = window.MesajData.messages[key] || [];
+      const fallback = key === 'hadith' && $('#hadithTopic').value !== 'random' ? [] : window.MesajData.messages[key] || [];
       if (fallback.length) {
         populateMessages(fallback, true);
         toast('Çevrimiçi kaynağa ulaşılamadı; kayıtlı seçim gösteriliyor.');
@@ -306,6 +310,9 @@
   choice.addEventListener('change', updateMessage);
   $('#quranTopic').addEventListener('change', () => {
     if (category.value === 'quran') loadQuran();
+  });
+  $('#hadithTopic').addEventListener('change', () => {
+    if (category.value === 'hadith') loadOnlineCategory('hadith');
   });
   $('#anotherMessage').addEventListener('click', () => {
     if (isLoading) return;

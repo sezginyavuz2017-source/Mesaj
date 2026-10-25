@@ -10,10 +10,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css?v=image-categories-2">
-  <script src="js/fetcher.js?v=image-categories-2" defer></script>
+  <script src="js/fetcher.js?v=hadith-topics-1" defer></script>
   <script src="js/canvas.js" defer></script>
   <script src="js/share.js" defer></script>
-  <script src="js/app.js?v=image-categories-2" defer></script>
+  <script src="js/app.js?v=hadith-topics-1" defer></script>
 </head>
 <body>
   <header class="topbar">
@@ -45,6 +45,12 @@
           <label class="field-label" for="quranTopic">AYET KONUSU</label>
           <select id="quranTopic" class="select-control">
             <option value="random">Rastgele ayet</option><option value="orphan">Yetim</option><option value="charity">Sadaka ve infak</option><option value="zakat">Zekât</option><option value="marriage">Evlilik</option><option value="death">Ölüm ve ahiret</option><option value="patience">Sabır</option><option value="gratitude">Şükür</option><option value="parents">Anne ve baba</option><option value="mercy">Merhamet</option><option value="justice">Adalet</option><option value="neighbors">Komşuluk</option>
+          </select>
+        </div>
+        <div class="field-block hidden" id="hadithTopicBlock">
+          <label class="field-label" for="hadithTopic">HADİS KONUSU</label>
+          <select id="hadithTopic" class="select-control">
+            <option value="random">Rastgele hadis</option><option value="faith">İman ve ahiret</option><option value="worship">İbadet ve dua</option><option value="character">Ahlak ve güzel söz</option><option value="family">Anne-baba ve aile</option><option value="charity">Sadaka ve yardımlaşma</option><option value="knowledge">İlim ve öğrenmek</option><option value="patience">Sabır ve şükür</option><option value="mercy">Merhamet ve kardeşlik</option><option value="rights">Komşuluk ve kul hakkı</option>
           </select>
         </div>
         <div class="field-block" id="messagePickerBlock">
